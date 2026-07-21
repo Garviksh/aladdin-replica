@@ -36,6 +36,49 @@ that actually move markets:
 
 ---
 
+## 🧭 Competitive improvements (borrowed from comparable tools)
+
+Techniques worth adopting, grouped by the project we'd learn them from. Full
+comparison in [`docs/BENCHMARKS.md`](docs/BENCHMARKS.md).
+
+### From Riskfolio-Lib / PyPortfolioOpt — risk math & optimization
+- [ ] **Ledoit–Wolf shrinkage** covariance + **EWMA (RiskMetrics)** option → more stable risk numbers than plain sample covariance
+- [ ] **CVaR / Expected Shortfall** (and CDaR) alongside VaR → coherent tail risk
+- [ ] **Efficient-frontier / mean-variance optimizer** and **Hierarchical Risk Parity (HRP)** → suggested weights
+- [ ] **Risk-parity / risk-budgeting** target weights
+
+### From Portfolio Visualizer — factor models & validation
+- [ ] **Multivariate factor regression** (replace our univariate betas) + **Fama–French factors** (Mkt-RF, SMB, HML, RMW, CMA, momentum) → real multi-factor exposures + alpha
+- [ ] **Rolling factor exposures / rolling beta**
+- [ ] **Backtesting** with rebalancing, and a **VaR backtest** (Kupiec / Christoffersen coverage) to *prove* accuracy
+
+### From pyfolio / empyrical / quantstats — performance analytics
+- [ ] Add **Sortino, Calmar, Omega, tail ratio, downside deviation, information ratio, tracking error, up/down capture**
+- [ ] **Rolling Sharpe / vol / beta** charts and a **top-N drawdowns** table with durations
+- [ ] One-page **tearsheet** export (PDF)
+
+### From QuantLib — rigor
+- [ ] **Cornish–Fisher / Student-t VaR** and **historical-bootstrap** Monte Carlo (fat tails) → more accurate tails than the normal assumption
+- [ ] Fixed-income **duration / convexity**; later option **greeks**
+
+### From Ghostfolio — product / UX (same TS stack)
+- [ ] **CSV / broker portfolio import**, transactions, **cost basis & realized P&L**, dividends
+- [ ] Multiple books / accounts, persistence, watchlists
+
+### From OpenBB — data breadth
+- [ ] **Pluggable data-provider layer** with fallback (formalize our Twelve Data → Yahoo → Stooq into one provider interface)
+- [ ] **Macro / economy data** (FRED) and multi-provider news
+
+## 🤖 Ollama Copilot upgrades
+- [ ] **Tool / function calling** — let the model invoke engine functions (run a what-if, pull a metric, run a scenario) instead of only reading a static snapshot
+- [ ] **RAG over holdings & news** via Ollama embeddings (`nomic-embed-text`) so it scales past the context window
+- [ ] **Structured JSON output** (`format: "json"`) for the Impact model → guaranteed-parseable events (no brittle text parsing)
+- [ ] **Configurable context length** (`options.num_ctx`) + **model picker** with recommended models, remembered in `localStorage`
+- [ ] **Multi-turn memory** within a session; **AbortController** cancel + timeout; **fallback model chain**
+- [ ] **Anti-hallucination verifier** — flag any figure not present in the live snapshot; cite the headline/metric behind each claim
+- [ ] Per-section **"Explain this number"** deep-links that feed the exact metric to the model
+- [ ] Task-specific prompt templates (analyze / predict / explain / teach)
+
 ## Now (in progress / next up)
 - [ ] News-impact scoring with Ollama (per-ticker sentiment + magnitude).
 - [ ] Regression-based real factor betas.

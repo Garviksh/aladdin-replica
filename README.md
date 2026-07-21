@@ -179,8 +179,9 @@ any static host or subdirectory.
 
 ## Roadmap
 
-Full plan in **[ROADMAP.md](ROADMAP.md)** · real-product context & optimization
-notes in **[docs/ALADDIN.md](docs/ALADDIN.md)**. Headline bets:
+Full plan in **[ROADMAP.md](ROADMAP.md)** · real-product context in
+**[docs/ALADDIN.md](docs/ALADDIN.md)** · competitive analysis & accuracy
+scorecard in **[docs/BENCHMARKS.md](docs/BENCHMARKS.md)**. Headline bets:
 
 - **News → Impact Prediction (Ollama)** — turn live headlines into quantified,
   per-holding market-impact estimates and a news-adjusted forecast.

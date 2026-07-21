@@ -6,6 +6,13 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-21
+- Add BENCHMARKS.md + competitive/Ollama improvement backlog in roadmap
+
+## 2026-07-21 — Competitive analysis + improvement backlog
+- Added `docs/BENCHMARKS.md`: comparison vs OpenBB, QuantLib, Riskfolio-Lib, pyfolio/quantstats, Ghostfolio, Portfolio Visualizer, plus an accuracy scorecard.
+- Roadmap: new "Competitive improvements (borrowed)" section (shrinkage/EWMA covariance, CVaR, multivariate Fama-French betas, backtesting, richer perf stats, optimizer, data-provider layer) and "Ollama Copilot upgrades" (tool-calling, RAG embeddings, structured JSON, larger context, anti-hallucination verifier).
+
+## 2026-07-21
 - Data-driven betas + News→Impact (Ollama) + ALADDIN & roadmap docs
 
 ## 2026-07-21 — Data-driven betas + News→Impact model
