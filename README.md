@@ -177,8 +177,17 @@ any static host or subdirectory.
 
 ## Roadmap
 
-CSV portfolio import · correlation heatmap · efficient-frontier optimizer ·
-fixed-income duration/convexity sub-module · PDF risk report export.
+Full plan in **[ROADMAP.md](ROADMAP.md)**. Headline bets:
+
+- **News → Impact Prediction (Ollama)** — turn live headlines into quantified,
+  per-holding market-impact estimates and a news-adjusted forecast.
+- **Real-world / alt-data factors** — weather & climate, energy/commodity spot
+  prices, macro releases (CPI, jobs, Fed), and geopolitical event risk fed into
+  the factor model and the Copilot's reasoning.
+- **Real, data-driven factor betas** — regress holdings on real factor-proxy ETFs
+  so exposures and stress/impact numbers are fully data-driven.
+- Live in-browser prices (BYO key) · correlation heatmap · efficient-frontier
+  optimizer · alerts · backtesting · fixed-income module · PDF export.
 
 ## License
 

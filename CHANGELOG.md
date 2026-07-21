@@ -6,6 +6,9 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-21
+- Ollama Copilot, real-data-only, live news, and roadmap
+
+## 2026-07-21
 - Local Ollama Copilot + real-data-only + live news
 
 ## 2026-07-21 — Local AI Copilot (Ollama) + real-data-only
