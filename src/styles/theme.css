@@ -856,3 +856,58 @@ ul.newslist li:last-child {
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
+
+/* ---- Data gate ---------------------------------------------------------- */
+.gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #cfcfcf;
+  padding: 20px;
+}
+.gate-box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: 2px 2px 0 #b5b5b5, inset 1px 1px 0 #fff;
+  padding: 24px 28px;
+  max-width: 580px;
+}
+.gate-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: 8px;
+}
+.gate-h {
+  font-size: 15px;
+  margin: 16px 0 6px;
+}
+.gate-p {
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+  max-width: 62ch;
+}
+.gate-steps {
+  margin: 0 0 14px;
+  padding-left: 18px;
+  font-size: 12px;
+  line-height: 1.9;
+}
+.gate-steps code,
+.gate-p code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: #111;
+  color: #fff;
+  padding: 1px 5px;
+}
+
+/* ---- Copilot model select ---------------------------------------------- */
+.copilot-model {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: #fff;
+  border: 1px solid #6a6a6a;
+  max-width: 130px;
+}

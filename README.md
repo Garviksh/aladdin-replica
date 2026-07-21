@@ -8,15 +8,15 @@ Every number on screen is computed — not faked — by a transparent, unit-test
 risk engine running entirely in the browser: a factor-model market simulation,
 covariance-based volatility, value-at-risk, risk decomposition, factor
 exposures, performance attribution, stress scenarios, mandate compliance, and a
-Monte Carlo forecast. It also ships a dashboard-aware **Copilot** that answers
-questions about the book entirely on-device — zero network calls.
+Monte Carlo forecast. It also ships a dashboard-aware **Copilot** powered by a
+local LLM (**Ollama**) that runs entirely on your machine.
 
 > **Disclaimer.** This is an **independent educational project**. It is **not
 > affiliated with, endorsed by, or connected to BlackRock, Inc.** "Aladdin" is a
 > trademark of BlackRock; it is referenced solely to describe the workflow being
-> emulated. Market data is **simulated by default**; you can optionally load
-> **real** end-of-day prices (see [Real market data](#real-market-data-optional)).
-> Nothing here is investment advice.
+> emulated. The terminal runs on **real** end-of-day market data (see
+> [Real market data](#real-market-data)); sample data is shown only if you
+> explicitly opt in and is clearly marked. Nothing here is investment advice.
 
 ---
 
@@ -50,18 +50,28 @@ The whole UI is strictly monochrome: gains and losses use ▲ / ▼ markers and
 accounting parentheses instead of colour, so it stays true black-and-white and
 colour-blind safe.
 
-## Copilot — on-screen, on-device, private
+## Copilot — local AI (Ollama), dashboard-aware
 
-A **Copilot** launcher sits in the corner on every tab. Ask it plain-English
-questions — *“what’s my VaR?”*, *“which position is riskiest?”*, *“how am I doing
-vs the benchmark?”*, *“what breached compliance?”*, *“what if NVDA drops 20%?”*,
-*“explain beta”* — and it answers from the live analytics.
+A **Copilot** launcher sits in the corner on every tab. Ask it to analyze,
+predict, or explain any section — *“what’s my risk?”*, *“predict the year
+ahead”*, *“explain the Risk tab”*, *“what if NVDA drops 20%?”*.
 
-**It runs 100% locally and makes zero network calls.** No personal information
-and no portfolio data ever leaves the browser; nothing is sent to any server or
-third-party LLM. The assistant is a deterministic, dashboard-aware engine (see
-`src/assistant/`); the interface is designed so a hosted or on-device LLM *could*
-be attached, but the shipped default sends nothing anywhere.
+Its brain is a **local LLM via [Ollama](https://ollama.com)**, grounded in a live
+snapshot of your dashboard (holdings, risk, performance, forecast, compliance)
+plus a description of what every section does and how it works. Everything stays
+on your machine — the data is sent only to your local Ollama server, never to the
+cloud. Enable it:
+
+```bash
+# 1. Install Ollama from https://ollama.com, then pull a model:
+ollama pull llama3.2
+# 2. Start it so the web app is allowed to call it (CORS):
+OLLAMA_ORIGINS=* ollama serve
+```
+
+The Copilot auto-detects Ollama and shows the active model. If Ollama isn’t
+running, it falls back to a built-in, deterministic assistant that answers from
+the same data with zero network calls.
 
 ## Quick start
 
@@ -75,7 +85,7 @@ Other scripts:
 ```bash
 npm run build         # type-check + production build to dist/
 npm run build:single  # one self-contained dist/aladdin-replica-standalone.html
-npm run refresh-data  # download real EOD prices (Stooq) → switches to real-data mode
+npm run refresh-data  # download REAL EOD prices (Twelve Data key, keyless fallback)
 npm run preview       # preview the production build
 npm run typecheck     # tsc --noEmit
 npm run lint          # eslint
@@ -90,28 +100,31 @@ Use the **Market Seed** control in the header to load a specific reproducible
 market, or **Reseed ⟳** to generate a fresh plausible world and watch every
 metric recompute.
 
-## Real market data (optional)
+## Real market data
 
-By default the terminal runs on a seeded simulation, so it works instantly and
-offline. To run it on **real end-of-day prices**:
+The terminal runs on **real market data**. On first load, if no dataset is
+present it shows a **load-data screen** — no dummy numbers are ever shown as if
+they were real. Load real end-of-day prices with one command:
 
 ```bash
-npm run refresh-data   # downloads real EOD history from Stooq — no API key
-npm run dev            # the header now shows DATA: REAL
+# Reliable: free Twelve Data key (30s signup, no card) — https://twelvedata.com/register
+TWELVE_DATA_KEY=your_key npm run refresh-data
+npm run dev            # header shows DATA: LIVE
 ```
 
-`refresh-data` pulls ~2 years of daily closes for the book’s instruments from
-Stooq (free, keyless, and server-side so there are no CORS issues), aligns them
-on common trading dates, and writes `src/data/marketData.json`. From then on the
+`refresh-data` pulls ~2 years of daily closes for the book’s instruments (primary:
+Twelve Data with your key; keyless fallback: Yahoo Finance, then Stooq — those are
+frequently rate-limited, which is why the key is recommended), aligns them on
+common trading dates, and writes `src/data/marketData.json`. From then on
 volatility, VaR, beta, correlations, drawdown, Sharpe, and the **Monte Carlo
-forecast** are all computed from **real returns**; the header **DATA** toggle
-switches SIM ↔ REAL and the status bar shows the data source and as-of date.
-Re-run `refresh-data` anytime to update, then `npm run dev` / `npm run build`.
+forecast** are all computed from **real returns**, and the status bar shows the
+source and as-of date. Re-run anytime to refresh.
 
-Notes: the model book’s target weights are seeded (Reseed makes a new book on the
-same real prices). Factor-exposure betas remain model priors — see ADR-005 in
-[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md); everything else is real. Stooq
-data is intended for personal / educational use.
+Notes: the book’s target weights are seeded (Reseed makes a new book on the same
+real prices). Factor-exposure betas remain model priors (ADR-005 in
+[`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)); everything else is real. With no
+data and no key you can click **Preview with sample data** on the load screen —
+it is clearly marked “SAMPLE — not real”.
 
 ## Tech stack
 

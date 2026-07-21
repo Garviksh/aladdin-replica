@@ -16,12 +16,9 @@ const wrap = (node: ReactNode) =>
   renderToStaticMarkup(<PortfolioProvider>{node}</PortfolioProvider>)
 
 describe('App smoke render', () => {
-  it('renders the terminal shell, dashboard, and Copilot launcher', () => {
+  it('renders the app without throwing (data gate or live terminal)', () => {
     const html = renderToStaticMarkup(<App />)
     expect(html).toContain('ALADDIN')
-    expect(html).toContain('Net Asset Value')
-    expect(html).toContain('Portfolio vs Benchmark')
-    expect(html).toContain('COPILOT')
     expect(html).not.toContain('NaN')
   })
 

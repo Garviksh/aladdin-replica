@@ -8,8 +8,11 @@ interface PortfolioCtx {
   setSeed: (n: number) => void
   reseed: () => void
   mode: DataMode
-  setMode: (m: DataMode) => void
   realAvailable: boolean
+  preview: boolean
+  setPreview: (b: boolean) => void
+  /** True when there is no real data and the user hasn't opted into sample preview. */
+  showGate: boolean
   dataAsOf: string | null
   dataSource: string | null
   analytics: Analytics
@@ -17,26 +20,34 @@ interface PortfolioCtx {
 
 const Ctx = createContext<PortfolioCtx | null>(null)
 
-/** Default seed encodes the build date for a stable, reproducible first load. */
 const DEFAULT_SEED = 20260721
 
 export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [seed, setSeed] = useState(DEFAULT_SEED)
-  const [mode, setMode] = useState<DataMode>(() => (realDataAvailable() ? 'real' : 'sim'))
+  const realAvailable = realDataAvailable()
+  const [preview, setPreview] = useState(false)
+
+  // Real data is the only "real" mode. Sample data is shown ONLY if the user
+  // explicitly opts into preview from the gate.
+  const mode: DataMode = realAvailable ? 'real' : 'sim'
   const analytics = useMemo(() => buildAnalytics(seed, mode), [seed, mode])
+  const showGate = !realAvailable && !preview
+
   const value = useMemo<PortfolioCtx>(
     () => ({
       seed,
       setSeed,
       reseed: () => setSeed(Math.floor(Math.random() * 1_000_000) + 1),
       mode,
-      setMode,
-      realAvailable: realDataAvailable(),
+      realAvailable,
+      preview,
+      setPreview,
+      showGate,
       dataAsOf: REAL_META.asOf,
       dataSource: REAL_META.source,
       analytics,
     }),
-    [seed, mode, analytics],
+    [seed, mode, realAvailable, preview, showGate, analytics],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

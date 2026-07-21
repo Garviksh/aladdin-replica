@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Copilot } from './components/Copilot'
+import { DataGate } from './components/DataGate'
 import { Header } from './components/Header'
 import { StatusBar } from './components/StatusBar'
 import { TabNav, type TabDef } from './components/TabNav'
@@ -26,14 +27,13 @@ const TABS: TabDef[] = [
   { id: 'guide', label: 'Guide' },
 ]
 
-function DemoBanner() {
-  const { mode, realAvailable } = usePortfolio()
+function SampleBanner() {
+  const { mode } = usePortfolio()
   if (mode === 'real') return null
   return (
     <div className="databanner">
-      Showing <strong>DEMO sample data</strong>. Run <code>npm run refresh-data</code> for real
-      market prices
-      {realAvailable ? ', then switch DATA: LIVE in the header.' : '.'}
+      <strong>SAMPLE DATA — not real.</strong> Run <code>TWELVE_DATA_KEY=your_key npm run
+      refresh-data</code> for live market prices, then reload.
     </div>
   )
 }
@@ -44,7 +44,7 @@ function Shell() {
     <div className="app">
       <Header />
       <TabNav tabs={TABS} active={tab} onSelect={setTab} />
-      <DemoBanner />
+      <SampleBanner />
       <main className="content">
         {tab === 'dashboard' && <DashboardView />}
         {tab === 'holdings' && <HoldingsView />}
@@ -62,10 +62,16 @@ function Shell() {
   )
 }
 
+function Root() {
+  const { showGate, setPreview } = usePortfolio()
+  if (showGate) return <DataGate onPreview={() => setPreview(true)} />
+  return <Shell />
+}
+
 export default function App() {
   return (
     <PortfolioProvider>
-      <Shell />
+      <Root />
     </PortfolioProvider>
   )
 }

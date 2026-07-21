@@ -13,7 +13,7 @@ function formatClock(d: Date): string {
 }
 
 export function Header() {
-  const { seed, setSeed, reseed, mode, setMode, realAvailable } = usePortfolio()
+  const { seed, setSeed, reseed, realAvailable, preview, dataSource, dataAsOf } = usePortfolio()
   const [draft, setDraft] = useState(String(seed))
   const [now, setNow] = useState(() => new Date())
 
@@ -56,18 +56,14 @@ export function Header() {
           Reseed ⟳
         </button>
         {realAvailable ? (
-          <button
-            className="btn"
-            onClick={() => setMode(mode === 'real' ? 'sim' : 'real')}
-            title="Toggle between real market data and simulation"
-          >
-            DATA: {mode === 'real' ? 'LIVE' : 'DEMO'}
-          </button>
-        ) : (
-          <span className="tag" title="Run  npm run refresh-data  to load real market prices">
-            DATA: DEMO
+          <span className="tag" title={`Live data · ${dataSource ?? ''} ${dataAsOf ?? ''}`}>
+            DATA: LIVE
           </span>
-        )}
+        ) : preview ? (
+          <span className="tag" title="Sample data — not real market data">
+            DATA: SAMPLE
+          </span>
+        ) : null}
         <span className="clock">{formatClock(now)}</span>
       </div>
     </header>

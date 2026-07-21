@@ -6,6 +6,14 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-21
+- Local Ollama Copilot + real-data-only + live news
+
+## 2026-07-21 — Local AI Copilot (Ollama) + real-data-only
+- Copilot now uses a local **Ollama** LLM, grounded in a live snapshot of the whole dashboard (holdings, risk, performance, forecast, compliance) plus how each section works; falls back to the built-in assistant if Ollama isn't running.
+- App is **real-data-only**: a load-data gate replaces dummy data; sample data only via explicit, clearly-marked preview.
+- Data fetch uses Twelve Data (API key) with Yahoo Finance / Stooq keyless fallback.
+
+## 2026-07-21
 - Real prices via Twelve Data key
 
 ## 2026-07-21 — Live news + real-data default
