@@ -10,6 +10,7 @@
     "build": "tsc --noEmit && vite build",
     "build:single": "vite build && node scripts/inline-singlefile.mjs",
     "refresh-data": "node scripts/fetch-data.mjs",
+    "ship": "node scripts/ship.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
