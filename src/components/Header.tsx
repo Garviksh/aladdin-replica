@@ -61,11 +61,11 @@ export function Header() {
             onClick={() => setMode(mode === 'real' ? 'sim' : 'real')}
             title="Toggle between real market data and simulation"
           >
-            DATA: {mode === 'real' ? 'REAL' : 'SIM'}
+            DATA: {mode === 'real' ? 'LIVE' : 'DEMO'}
           </button>
         ) : (
-          <span className="tag" title="Run  npm run refresh-data  to load real prices">
-            DATA: SIM
+          <span className="tag" title="Run  npm run refresh-data  to load real market prices">
+            DATA: DEMO
           </span>
         )}
         <span className="clock">{formatClock(now)}</span>

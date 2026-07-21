@@ -41,6 +41,8 @@ through a book:
 - **Forecast** — a seeded Monte Carlo projection of the book (percentile fan
   chart, expected value, probability of loss, horizon VaR) plus per-asset
   expected-return and price targets over 1M / 3M / 6M / 1Y horizons.
+- **News** — live market headlines and per-holding news via **GDELT** (a real,
+  keyless news API), fetched in the browser; also surfaced on the Dashboard.
 - **Guide** — a plain-English walkthrough of how to manage a book and what every
   metric means.
 

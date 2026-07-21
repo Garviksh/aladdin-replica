@@ -4,6 +4,9 @@ import { DataTable, type Column } from '../components/DataTable'
 import { Delta } from '../components/Delta'
 import { KpiTile } from '../components/KpiTile'
 import { Panel } from '../components/Panel'
+import { NewsList } from '../components/NewsList'
+import { MARKET_QUERY } from '../data/news'
+import { useNews } from '../hooks/useNews'
 import { fmtCurrency, fmtPct, fmtSignedPct } from '../lib/format'
 import { usePortfolio } from '../state/PortfolioContext'
 import type { Position } from '../types/domain'
@@ -12,6 +15,7 @@ export function DashboardView() {
   const { analytics } = usePortfolio()
   const { portfolio, risk, performance, compliance, allocation, benchmarkName, lookbackDays } =
     analytics
+  const news = useNews(MARKET_QUERY, 6)
 
   const dayPnl = portfolio.positions.reduce((a, p) => a + p.dayPnl, 0)
   const dayPct = portfolio.totalValue > 0 ? dayPnl / portfolio.totalValue : 0
@@ -93,6 +97,12 @@ export function DashboardView() {
           <BarChart items={topRisk} />
         </Panel>
       </div>
+
+      <Panel title="Market News" hint="live headlines · GDELT" flush>
+        <div className="news-wrap">
+          <NewsList {...news} />
+        </div>
+      </Panel>
     </div>
   )
 }

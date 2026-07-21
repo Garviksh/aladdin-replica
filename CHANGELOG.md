@@ -6,7 +6,11 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-21
-- what you changed
+- Real prices via Twelve Data key
+
+## 2026-07-21 — Live news + real-data default
+- Added a **News** tab and a Dashboard news panel with real headlines via GDELT (keyless, in-browser).
+- App now defaults to real data; sample data is clearly labelled **DEMO** with a banner prompting `npm run refresh-data`.
 
 ## 2026-07-21 — Real market data
 - Real end-of-day data mode via `npm run refresh-data` (Stooq, no API key).

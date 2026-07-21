@@ -799,3 +799,60 @@ dl.glossary dd {
     height: 70vh;
   }
 }
+
+/* ---- Data banner -------------------------------------------------------- */
+.databanner {
+  background: #111;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-bottom: 1px solid #000;
+}
+.databanner code {
+  background: #333;
+  padding: 0 4px;
+  border: 1px solid #555;
+}
+
+/* ---- News --------------------------------------------------------------- */
+.news-wrap {
+  padding: 6px 10px;
+}
+.news-msg {
+  font-size: 11.5px;
+  color: var(--muted);
+  padding: 10px 6px;
+}
+ul.newslist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+ul.newslist li {
+  padding: 7px 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+ul.newslist li:last-child {
+  border-bottom: none;
+}
+.news-title {
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.news-title:hover {
+  text-decoration: underline;
+}
+.news-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}

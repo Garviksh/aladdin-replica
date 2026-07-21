@@ -13,14 +13,14 @@ export function StatusBar() {
       <div className="seg">
         <span>
           <span className="dot" />
-          {mode === 'real' ? 'LIVE DATA · CONNECTED' : 'SIMULATION'}
+          {mode === 'real' ? 'LIVE DATA · CONNECTED' : 'DEMO DATA (sample)'}
         </span>
         <span>NAV {fmtCurrency(portfolio.totalValue, { compact: true })}</span>
         <span>POSITIONS {portfolio.positions.length}</span>
         <span>COMPLIANCE {compText}</span>
       </div>
       <div className="seg">
-        <span>SRC {mode === 'real' ? (dataSource ?? 'REAL') : 'SIMULATED'}</span>
+        <span>SRC {mode === 'real' ? (dataSource ?? 'REAL') : 'DEMO'}</span>
         <span>BMK {benchmarkName}</span>
         <span>SEED {seed}</span>
         <span>AS OF {mode === 'real' ? (dataAsOf ?? portfolio.asOf) : portfolio.asOf}</span>

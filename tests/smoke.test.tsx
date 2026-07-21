@@ -8,6 +8,7 @@ import { ComplianceView } from '../src/views/ComplianceView'
 import { ForecastView } from '../src/views/ForecastView'
 import { GuideView } from '../src/views/GuideView'
 import { HoldingsView } from '../src/views/HoldingsView'
+import { NewsView } from '../src/views/NewsView'
 import { PerformanceView } from '../src/views/PerformanceView'
 import { RiskView } from '../src/views/RiskView'
 
@@ -29,6 +30,7 @@ describe('App smoke render', () => {
     expect(wrap(<RiskView />)).toContain('Contribution to Risk')
     expect(wrap(<PerformanceView />)).toContain('Cumulative Performance')
     expect(wrap(<ForecastView />)).toContain('Projected Portfolio Value')
+    expect(wrap(<NewsView />)).toContain('Live News')
     expect(wrap(<AllocationView />)).toContain('By Sector')
     expect(wrap(<ComplianceView />)).toContain('Mandate Compliance')
     expect(wrap(<GuideView />)).toContain('walkthrough')
@@ -40,6 +42,7 @@ describe('App smoke render', () => {
       <RiskView key="r" />,
       <PerformanceView key="p" />,
       <ForecastView key="f" />,
+      <NewsView key="n" />,
       <AllocationView key="a" />,
       <ComplianceView key="c" />,
       <GuideView key="g" />,
