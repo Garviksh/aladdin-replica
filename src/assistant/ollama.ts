@@ -105,6 +105,7 @@ THE TERMINAL'S SECTIONS (what each does / how it works):
 - Performance: cumulative return vs benchmark, Sharpe, max drawdown, and return attribution by sector and asset class.
 - Forecast: Monte Carlo projection of the book (percentile fan), expected value, probability of loss, horizon VaR, and per-asset expected-return targets.
 - News: live headlines (via GDELT) for the market and each holding.
+- Impact: a "News → Impact" model (you, via Ollama) that turns live headlines into estimated per-holding and book P&L using the factor betas.
 - Allocation: exposure by asset class, sector, and region.
 - Compliance: mandate rules (max position, sector concentration, equity ceiling, VaR limit, cash band, min diversification) flagged pass / warning / breach.
 - Copilot (you): answer questions, explain any section, predict, and guide the user.
@@ -116,6 +117,18 @@ ${snapshotText(a, forecast)}`
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant'
   content: string
+}
+
+/** Non-streaming chat completion; returns the full message text. */
+export async function askOllama(model: string, messages: ChatMessage[]): Promise<string> {
+  const res = await fetch(`${OLLAMA_URL}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model, messages, stream: false }),
+  })
+  if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`)
+  const j = (await res.json()) as { message?: { content?: string } }
+  return j.message?.content ?? ''
 }
 
 /** Stream a chat completion from Ollama, calling onToken for each text chunk. */

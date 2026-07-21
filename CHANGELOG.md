@@ -6,6 +6,14 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-21
+- Data-driven betas + News→Impact (Ollama) + ALADDIN & roadmap docs
+
+## 2026-07-21 — Data-driven betas + News→Impact model
+- **Real factor betas**: exposures and stress/impact now regress each holding's real returns on real factor proxies (SPY/IEF/HYG/GLD); FX falls back to prior.
+- **News → Impact** tab: local Ollama classifies live headlines into factor/price events, mapped to per-holding and book P&L via those betas.
+- Added `docs/ALADDIN.md` (real-product reference + optimization vs. global pain points) and `ROADMAP.md`.
+
+## 2026-07-21
 - Ollama Copilot, real-data-only, live news, and roadmap
 
 ## 2026-07-21

@@ -1,5 +1,6 @@
 import { FACTORS } from '../data/universe'
 import type { ComponentRisk, Portfolio, RiskMetrics } from '../types/domain'
+import { betaOf, type BetaMap } from './factors'
 import { covMatrix, covariance, percentile, std } from './stats'
 
 const TRADING_DAYS = 252
@@ -30,6 +31,7 @@ export function computeRisk(
   portfolio: Portfolio,
   returns: number[][],
   benchmarkReturns: number[],
+  betas?: BetaMap,
 ): RiskMetrics {
   const positions = portfolio.positions
   const invested = portfolio.investedValue
@@ -82,7 +84,7 @@ export function computeRisk(
   // Factor exposures (weight-averaged betas).
   const factorExposures = FACTORS.map((f) => {
     let e = 0
-    for (let i = 0; i < k; i++) e += weights[i] * (positions[i].instrument.betas[f.key] ?? 0)
+    for (let i = 0; i < k; i++) e += weights[i] * betaOf(betas, positions[i], f.key)
     return { key: f.key, label: f.label, exposure: e }
   })
 

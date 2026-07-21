@@ -11,6 +11,7 @@ import { DashboardView } from './views/DashboardView'
 import { ForecastView } from './views/ForecastView'
 import { GuideView } from './views/GuideView'
 import { HoldingsView } from './views/HoldingsView'
+import { ImpactView } from './views/ImpactView'
 import { NewsView } from './views/NewsView'
 import { PerformanceView } from './views/PerformanceView'
 import { RiskView } from './views/RiskView'
@@ -22,6 +23,7 @@ const TABS: TabDef[] = [
   { id: 'performance', label: 'Performance' },
   { id: 'forecast', label: 'Forecast' },
   { id: 'news', label: 'News' },
+  { id: 'impact', label: 'Impact' },
   { id: 'allocation', label: 'Allocation' },
   { id: 'compliance', label: 'Compliance' },
   { id: 'guide', label: 'Guide' },
@@ -52,6 +54,7 @@ function Shell() {
         {tab === 'performance' && <PerformanceView />}
         {tab === 'forecast' && <ForecastView />}
         {tab === 'news' && <NewsView />}
+        {tab === 'impact' && <ImpactView />}
         {tab === 'allocation' && <AllocationView />}
         {tab === 'compliance' && <ComplianceView />}
         {tab === 'guide' && <GuideView />}

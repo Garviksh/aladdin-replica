@@ -43,6 +43,8 @@ through a book:
   expected-return and price targets over 1M / 3M / 6M / 1Y horizons.
 - **News** — live market headlines and per-holding news via **GDELT** (a real,
   keyless news API), fetched in the browser; also surfaced on the Dashboard.
+- **Impact** — an Ollama-driven *News → Impact* model that turns live headlines
+  into estimated per-holding and book P&L via the data-driven factor betas.
 - **Guide** — a plain-English walkthrough of how to manage a book and what every
   metric means.
 
@@ -177,7 +179,8 @@ any static host or subdirectory.
 
 ## Roadmap
 
-Full plan in **[ROADMAP.md](ROADMAP.md)**. Headline bets:
+Full plan in **[ROADMAP.md](ROADMAP.md)** · real-product context & optimization
+notes in **[docs/ALADDIN.md](docs/ALADDIN.md)**. Headline bets:
 
 - **News → Impact Prediction (Ollama)** — turn live headlines into quantified,
   per-holding market-impact estimates and a news-adjusted forecast.

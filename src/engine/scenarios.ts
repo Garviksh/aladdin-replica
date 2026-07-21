@@ -1,4 +1,5 @@
 import type { FactorKey, Portfolio, ScenarioResult } from '../types/domain'
+import { betaOf, type BetaMap } from './factors'
 
 interface ScenarioDef {
   key: string
@@ -44,14 +45,14 @@ export const SCENARIOS: ScenarioDef[] = [
 ]
 
 /** Apply each scenario's factor shocks to the book and return the P&L impact. */
-export function runScenarios(portfolio: Portfolio): ScenarioResult[] {
+export function runScenarios(portfolio: Portfolio, betas?: BetaMap): ScenarioResult[] {
   const invested = portfolio.investedValue
   return SCENARIOS.map((s) => {
     let pnl = 0
     for (const p of portfolio.positions) {
       let r = 0
       for (const key of Object.keys(s.shocks) as FactorKey[]) {
-        r += (p.instrument.betas[key] ?? 0) * (s.shocks[key] ?? 0)
+        r += betaOf(betas, p, key) * (s.shocks[key] ?? 0)
       }
       pnl += p.marketValue * r
     }

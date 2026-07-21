@@ -3,6 +3,7 @@ import { getMarket, realDataAvailable, REAL_META, type DataMode } from '../data/
 import type { Analytics } from '../types/domain'
 import { computeAllocation } from './allocation'
 import { evaluateCompliance } from './compliance'
+import { estimateBetas } from './factors'
 import { computePerformance } from './performance'
 import { computeRisk } from './risk'
 import { runScenarios } from './scenarios'
@@ -13,10 +14,11 @@ export function buildAnalytics(seed: number, mode: DataMode = 'sim'): Analytics 
     seed,
     mode,
   )
-  const risk = computeRisk(portfolio, returns, benchmarkReturns)
+  const betas = estimateBetas(portfolio.positions, returns, benchmarkReturns)
+  const risk = computeRisk(portfolio, returns, benchmarkReturns, betas)
   const performance = computePerformance(portfolio, returns, benchmarkReturns, dates)
   const compliance = evaluateCompliance(portfolio, risk)
-  const scenarios = runScenarios(portfolio)
+  const scenarios = runScenarios(portfolio, betas)
   const allocation = computeAllocation(portfolio)
   return {
     portfolio,
