@@ -94,6 +94,35 @@ describe('buildAnalytics', () => {
     expect(a.risk.var99_1d).toBeGreaterThan(a.risk.var95_1d)
   })
 
+  it('has CVaR (expected shortfall) heavier than VaR at each level', () => {
+    expect(a.risk.cvar95_1d).toBeGreaterThan(a.risk.var95_1d)
+    expect(a.risk.cvar99_1d).toBeGreaterThan(a.risk.var99_1d)
+    expect(a.risk.histCvar95_1d).toBeGreaterThan(0)
+  })
+
+  it('reports fat-tail VaR and a valid VaR backtest', () => {
+    expect(a.risk.cfVar99_1d).toBeGreaterThan(0)
+    expect(a.risk.histVar99_1d).toBeGreaterThanOrEqual(a.risk.histVar95_1d)
+    expect(a.risk.backtest.levels.length).toBe(2)
+    for (const l of a.risk.backtest.levels) {
+      expect(l.kupiecP).toBeGreaterThanOrEqual(0)
+      expect(l.kupiecP).toBeLessThanOrEqual(1)
+      expect(typeof l.pass).toBe('boolean')
+    }
+  })
+
+  it('reports finite risk-adjusted performance metrics', () => {
+    for (const v of [
+      a.performance.sortino,
+      a.performance.calmar,
+      a.performance.informationRatio,
+    ]) {
+      expect(Number.isFinite(v)).toBe(true)
+    }
+    expect(a.performance.trackingError).toBeGreaterThanOrEqual(0)
+    expect(a.performance.downsideDeviation).toBeGreaterThanOrEqual(0)
+  })
+
   it('has component risk contributions summing to portfolio volatility', () => {
     const sum = a.risk.components.reduce((s, c) => s + c.contribution, 0)
     expect(sum).toBeCloseTo(a.risk.annualVol, 6)

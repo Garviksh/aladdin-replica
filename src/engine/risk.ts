@@ -1,11 +1,18 @@
 import { FACTORS } from '../data/universe'
 import type { ComponentRisk, Portfolio, RiskMetrics } from '../types/domain'
+import { computeVarBacktest } from './backtest'
+import { covByMethod, type CovMethod } from './covariance'
 import { betaOf, type BetaMap } from './factors'
-import { covMatrix, covariance, percentile, std } from './stats'
+import { covariance, kurtosis, percentile, skewness, std } from './stats'
 
 const TRADING_DAYS = 252
 const Z95 = 1.645
 const Z99 = 2.326
+
+/** Standard normal probability density. */
+function normPdf(z: number): number {
+  return Math.exp((-z * z) / 2) / Math.sqrt(2 * Math.PI)
+}
 
 function annualizeVol(dailyVol: number): number {
   return dailyVol * Math.sqrt(TRADING_DAYS)
@@ -32,13 +39,14 @@ export function computeRisk(
   returns: number[][],
   benchmarkReturns: number[],
   betas?: BetaMap,
+  covMethod: CovMethod = 'sample',
 ): RiskMetrics {
   const positions = portfolio.positions
   const invested = portfolio.investedValue
   const weights = positions.map((p) => p.marketValue / invested)
   const k = weights.length
 
-  const cov = covMatrix(returns) // daily covariance
+  const cov = covByMethod(returns, covMethod) // daily covariance
 
   // Portfolio daily variance = wᵀ Σ w, and (Σ w) for marginal contributions.
   const sigmaW = new Array<number>(k).fill(0)
@@ -77,6 +85,30 @@ export function computeRisk(
   const pnl = pRet.map((r) => r * invested)
   const histVar95_1d = -percentile(pnl, 0.05)
 
+  // Expected Shortfall (CVaR): average loss beyond the VaR threshold.
+  // Parametric normal: ES = φ(z)/(1-α) · σ · V.
+  const cvar95_1d = (normPdf(Z95) / 0.05) * dailyVolCurrency
+  const cvar99_1d = (normPdf(Z99) / 0.01) * dailyVolCurrency
+  const var95pnl = percentile(pnl, 0.05)
+  const tail = pnl.filter((x) => x <= var95pnl)
+  const histCvar95_1d = tail.length
+    ? -(tail.reduce((a, b) => a + b, 0) / tail.length)
+    : histVar95_1d
+  const histVar99_1d = -percentile(pnl, 0.01)
+
+  // Cornish–Fisher: adjust the normal quantile for the book's skew & fat tails.
+  const skew = skewness(pRet)
+  const exKurt = kurtosis(pRet)
+  const cf = (z: number) =>
+    z +
+    ((z * z - 1) / 6) * skew +
+    ((z * z * z - 3 * z) / 24) * exKurt -
+    ((2 * z * z * z - 5 * z) / 36) * skew * skew
+  const cfVar95_1d = Math.max(0, cf(Z95) * dailyVolCurrency)
+  const cfVar99_1d = Math.max(0, cf(Z99) * dailyVolCurrency)
+
+  const backtest = computeVarBacktest(pRet, dailyVol)
+
   // Beta to benchmark.
   const bVar = std(benchmarkReturns) ** 2
   const beta = bVar > 0 ? covariance(pRet, benchmarkReturns) / bVar : 0
@@ -100,9 +132,18 @@ export function computeRisk(
     var95_1d,
     var99_1d,
     histVar95_1d,
+    histVar99_1d,
+    cfVar95_1d,
+    cfVar99_1d,
+    cvar95_1d,
+    cvar99_1d,
+    histCvar95_1d,
+    skew,
+    exKurt,
     beta,
     factorExposures,
     components,
     diversification,
+    backtest,
   }
 }

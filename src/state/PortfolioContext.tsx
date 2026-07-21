@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
 import { REAL_META, realDataAvailable, type DataMode } from '../data/market'
-import { buildAnalytics } from '../engine'
+import { buildAnalytics, type CovMethod } from '../engine'
 import type { Analytics } from '../types/domain'
 
 interface PortfolioCtx {
@@ -8,6 +8,8 @@ interface PortfolioCtx {
   setSeed: (n: number) => void
   reseed: () => void
   mode: DataMode
+  covMethod: CovMethod
+  setCovMethod: (m: CovMethod) => void
   realAvailable: boolean
   preview: boolean
   setPreview: (b: boolean) => void
@@ -26,11 +28,15 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [seed, setSeed] = useState(DEFAULT_SEED)
   const realAvailable = realDataAvailable()
   const [preview, setPreview] = useState(false)
+  const [covMethod, setCovMethod] = useState<CovMethod>('sample')
 
   // Real data is the only "real" mode. Sample data is shown ONLY if the user
   // explicitly opts into preview from the gate.
   const mode: DataMode = realAvailable ? 'real' : 'sim'
-  const analytics = useMemo(() => buildAnalytics(seed, mode), [seed, mode])
+  const analytics = useMemo(
+    () => buildAnalytics(seed, mode, covMethod),
+    [seed, mode, covMethod],
+  )
   const showGate = !realAvailable && !preview
 
   const value = useMemo<PortfolioCtx>(
@@ -39,6 +45,8 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       setSeed,
       reseed: () => setSeed(Math.floor(Math.random() * 1_000_000) + 1),
       mode,
+      covMethod,
+      setCovMethod,
       realAvailable,
       preview,
       setPreview,
@@ -47,7 +55,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       dataSource: REAL_META.source,
       analytics,
     }),
-    [seed, mode, realAvailable, preview, showGate, analytics],
+    [seed, mode, covMethod, realAvailable, preview, showGate, analytics],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

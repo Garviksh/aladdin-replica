@@ -47,6 +47,15 @@ export function computePerformance(
     maxDrawdown = Math.min(maxDrawdown, pt.portfolio / peak - 1)
   }
 
+  // Downside-only and benchmark-relative risk-adjusted metrics.
+  const downsideDeviation = Math.sqrt(mean(pRet.map((r) => Math.min(0, r) ** 2))) * Math.sqrt(TRADING_DAYS)
+  const sortino = downsideDeviation > 0 ? (mu - RF_ANNUAL) / downsideDeviation : 0
+  const calmar = maxDrawdown < 0 ? mu / Math.abs(maxDrawdown) : 0
+  const active = pRet.map((r, t) => r - benchmarkReturns[t])
+  const trackingError = std(active) * Math.sqrt(TRADING_DAYS)
+  const muB = mean(benchmarkReturns) * TRADING_DAYS
+  const informationRatio = trackingError > 0 ? (mu - muB) / trackingError : 0
+
   // Return attribution: per-instrument compounded return over the window,
   // grouped and weighted. Group contributions approximately sum to total return.
   const instTotalReturn = returns.map((r) => {
@@ -84,6 +93,11 @@ export function computePerformance(
     benchmarkReturn,
     activeReturn,
     sharpe,
+    sortino,
+    calmar,
+    informationRatio,
+    trackingError,
+    downsideDeviation,
     maxDrawdown,
     bySector,
     byAssetClass,

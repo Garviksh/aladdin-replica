@@ -41,6 +41,10 @@ export function PerformanceView() {
         <KpiTile label="Sharpe" value={performance.sharpe.toFixed(2)} sub="rf 2%" />
         <KpiTile label="Max Drawdown" value={fmtSignedPct(performance.maxDrawdown)} sub="peak-to-trough" />
         <KpiTile label="Ann. Vol" value={fmtPct(risk.annualVol)} sub="ex-ante" />
+        <KpiTile label="Sortino" value={performance.sortino.toFixed(2)} sub="downside-adjusted" />
+        <KpiTile label="Calmar" value={performance.calmar.toFixed(2)} sub="return / max DD" />
+        <KpiTile label="Info Ratio" value={performance.informationRatio.toFixed(2)} sub="active / TE" />
+        <KpiTile label="Tracking Error" value={fmtPct(performance.trackingError)} sub="vs benchmark" />
       </div>
 
       <Panel title="Cumulative Performance" hint={`Growth of 100 · ${lookbackDays}d`}>

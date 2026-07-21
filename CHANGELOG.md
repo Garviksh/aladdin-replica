@@ -6,6 +6,21 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-21
+- Risk realism: EWMA/shrinkage covariance, fat-tail VaR, Kupiec/Christoffersen backtest
+
+## 2026-07-22 — Risk realism: EWMA/shrinkage covariance, fat-tail VaR, VaR backtest
+- Covariance estimator selector on the Risk tab: **Sample / EWMA / Ledoit–Wolf shrinkage**.
+- **Fat-tailed VaR** — Cornish–Fisher (skew/kurtosis-adjusted) plus historical 95/99, shown beside normal VaR and CVaR.
+- **VaR backtest** panel — Kupiec POF + Christoffersen coverage tests with p-values and PASS/FAIL.
+- Copilot snapshot now includes tail metrics and the backtest result.
+
+## 2026-07-21 — Accuracy upgrade: multivariate betas, CVaR, richer metrics
+- Factor betas now estimated by **multivariate OLS** (intercept + ridge) instead of univariate — removes double-counting; improves exposures, stress, and News→Impact.
+- Added **CVaR / Expected Shortfall** (parametric 95/99 + historical) to the Risk tab and a CVaR KPI on the Dashboard.
+- Added **Sortino, Calmar, Information Ratio, Tracking Error, downside deviation** to Performance.
+- Responsive KPI grid; the Ollama Copilot snapshot now includes the new metrics.
+
+## 2026-07-21
 - Add BENCHMARKS.md + competitive/Ollama improvement backlog in roadmap
 
 ## 2026-07-21 — Competitive analysis + improvement backlog

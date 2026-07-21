@@ -94,12 +94,44 @@ export interface RiskMetrics {
   var99_1d: number
   /** Historical 1-day 95% VaR (currency). */
   histVar95_1d: number
+  /** Parametric 1-day Expected Shortfall / CVaR (currency, positive = loss). */
+  cvar95_1d: number
+  cvar99_1d: number
+  /** Historical 1-day 95% Expected Shortfall (currency). */
+  histCvar95_1d: number
+  /** Historical 1-day 99% VaR (currency). */
+  histVar99_1d: number
+  /** Cornish–Fisher (fat-tailed) 1-day VaR (currency). */
+  cfVar95_1d: number
+  cfVar99_1d: number
+  /** Daily-return skewness and excess kurtosis of the book. */
+  skew: number
+  exKurt: number
   /** Portfolio beta to the benchmark. */
   beta: number
   factorExposures: FactorExposure[]
   components: ComponentRisk[]
   /** Diversification ratio: 1 - portfolioVol / weightedAvgStandaloneVol. */
   diversification: number
+  /** VaR coverage backtest (Kupiec + Christoffersen). */
+  backtest: VarBacktest
+}
+
+export interface VarBacktestLevel {
+  level: number
+  exceptions: number
+  expected: number
+  rate: number
+  kupiecLR: number
+  kupiecP: number
+  christoffersenLR: number
+  christoffersenP: number
+  pass: boolean
+}
+
+export interface VarBacktest {
+  obs: number
+  levels: VarBacktestLevel[]
 }
 
 export interface ScenarioResult {
@@ -133,6 +165,14 @@ export interface Performance {
   benchmarkReturn: number
   activeReturn: number
   sharpe: number
+  sortino: number
+  calmar: number
+  /** Annualized information ratio vs. benchmark. */
+  informationRatio: number
+  /** Annualized tracking error (fraction). */
+  trackingError: number
+  /** Annualized downside deviation (fraction). */
+  downsideDeviation: number
   maxDrawdown: number
   bySector: AttributionRow[]
   byAssetClass: AttributionRow[]

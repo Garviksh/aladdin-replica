@@ -76,6 +76,11 @@ export function DashboardView() {
           value={fmtCurrency(risk.var99_1d, { compact: true })}
           sub={`${fmtPct(risk.var99_1d / portfolio.totalValue)} of NAV`}
         />
+        <KpiTile
+          label="1-day CVaR 99%"
+          value={fmtCurrency(risk.cvar99_1d, { compact: true })}
+          sub="expected shortfall"
+        />
         <KpiTile label="Beta" value={risk.beta.toFixed(2)} sub={`vs ${benchmarkName}`} />
         <KpiTile label="Compliance" value={compText} sub={`${compliance.length} rules`} />
       </div>

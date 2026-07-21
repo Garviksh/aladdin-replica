@@ -49,6 +49,30 @@ export function correlation(xs: number[], ys: number[]): number {
   return denom > 0 ? covariance(xs, ys) / denom : 0
 }
 
+/** Sample skewness (population moment). */
+export function skewness(xs: number[]): number {
+  const n = xs.length
+  if (n < 3) return 0
+  const m = mean(xs)
+  const s = std(xs, false)
+  if (s === 0) return 0
+  let sum = 0
+  for (const x of xs) sum += ((x - m) / s) ** 3
+  return sum / n
+}
+
+/** Excess kurtosis (population moment; normal = 0). */
+export function kurtosis(xs: number[]): number {
+  const n = xs.length
+  if (n < 4) return 0
+  const m = mean(xs)
+  const s = std(xs, false)
+  if (s === 0) return 0
+  let sum = 0
+  for (const x of xs) sum += ((x - m) / s) ** 4
+  return sum / n - 3
+}
+
 /** Linear-interpolated percentile. p in [0, 1]. */
 export function percentile(xs: number[], p: number): number {
   if (xs.length === 0) return NaN

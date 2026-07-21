@@ -60,10 +60,14 @@ export function snapshotText(a: Analytics, forecast?: Forecast): string {
     `NAV ${fmtCurrency(nav)} = invested ${fmtCurrency(a.portfolio.investedValue)} + cash ${fmtCurrency(a.portfolio.cash)}.`,
   )
   lines.push(
-    `Risk: ex-ante vol ${fmtPct(r.annualVol)}, 1d VaR95 ${fmtCurrency(r.var95_1d)}, VaR99 ${fmtCurrency(r.var99_1d)} (${fmtPct(r.var99_1d / nav)} of NAV), beta ${r.beta.toFixed(2)}, diversification ${fmtPct(r.diversification)}.`,
+    `Risk: ex-ante vol ${fmtPct(r.annualVol)}, 1d VaR95 ${fmtCurrency(r.var95_1d)}, VaR99 ${fmtCurrency(r.var99_1d)} (${fmtPct(r.var99_1d / nav)} of NAV), CVaR95 ${fmtCurrency(r.cvar95_1d)}, CVaR99 ${fmtCurrency(r.cvar99_1d)}, beta ${r.beta.toFixed(2)}, diversification ${fmtPct(r.diversification)}.`,
+  )
+  const bt99 = r.backtest.levels.find((l) => l.level === 0.99)
+  lines.push(
+    `Tail: Cornish-Fisher VaR99 ${fmtCurrency(r.cfVar99_1d)}, historical VaR99 ${fmtCurrency(r.histVar99_1d)}, skew ${r.skew.toFixed(2)}, excess kurtosis ${r.exKurt.toFixed(2)}. VaR backtest 99%: ${bt99 ? `${bt99.exceptions} exceptions vs ${bt99.expected.toFixed(1)} expected (${bt99.pass ? 'PASS' : 'FAIL'})` : 'n/a'}.`,
   )
   lines.push(
-    `Performance: total ${fmtSignedPct(p.totalReturn)} vs benchmark ${fmtSignedPct(p.benchmarkReturn)} (active ${fmtSignedPct(p.activeReturn)}), Sharpe ${p.sharpe.toFixed(2)}, max drawdown ${fmtSignedPct(p.maxDrawdown)}.`,
+    `Performance: total ${fmtSignedPct(p.totalReturn)} vs benchmark ${fmtSignedPct(p.benchmarkReturn)} (active ${fmtSignedPct(p.activeReturn)}), Sharpe ${p.sharpe.toFixed(2)}, Sortino ${p.sortino.toFixed(2)}, Calmar ${p.calmar.toFixed(2)}, InfoRatio ${p.informationRatio.toFixed(2)}, TE ${fmtPct(p.trackingError)}, max drawdown ${fmtSignedPct(p.maxDrawdown)}.`,
   )
   lines.push(
     `Factor exposures: ${r.factorExposures.map((f) => `${f.label} ${f.exposure.toFixed(2)}`).join(', ')}.`,
