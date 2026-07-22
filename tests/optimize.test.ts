@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { getMarket } from '../src/engine'
 import { covByMethod } from '../src/engine/covariance'
-import { minVarianceWeights, portfolioVol, riskParityWeights } from '../src/engine/optimize'
+import {
+  expectedAnnualReturns,
+  maxSharpeWeights,
+  minVarianceWeights,
+  portfolioVol,
+  randomPortfolios,
+  riskParityWeights,
+} from '../src/engine/optimize'
 
 const m = getMarket(20260721, 'sim')
 const cov = covByMethod(m.returns, 'sample')
@@ -26,5 +33,23 @@ describe('optimizer', () => {
     const w = riskParityWeights(cov)
     expect(w.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 6)
     for (const x of w) expect(x).toBeGreaterThan(0)
+  })
+
+  it('max-Sharpe weights are long-only and sum to 1', () => {
+    const mu = expectedAnnualReturns(m.returns)
+    const w = maxSharpeWeights(cov, mu)
+    expect(w.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 6)
+    for (const x of w) expect(x).toBeGreaterThanOrEqual(0)
+  })
+
+  it('random portfolios return finite risk/return points', () => {
+    const mu = expectedAnnualReturns(m.returns)
+    const pts = randomPortfolios(cov, mu, 50)
+    expect(pts.length).toBe(50)
+    for (const p of pts) {
+      expect(Number.isFinite(p.vol)).toBe(true)
+      expect(Number.isFinite(p.ret)).toBe(true)
+      expect(p.vol).toBeGreaterThanOrEqual(0)
+    }
   })
 })

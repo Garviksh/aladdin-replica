@@ -1,6 +1,7 @@
 import { DataTable, type Column } from '../components/DataTable'
 import { Delta } from '../components/Delta'
 import { Panel } from '../components/Panel'
+import { downloadText, toHoldingsCsv } from '../lib/exportCsv'
 import { fmtCurrency, fmtNumber, fmtPct, fmtSignedPct } from '../lib/format'
 import { usePortfolio } from '../state/PortfolioContext'
 import type { Position } from '../types/domain'
@@ -8,6 +9,8 @@ import type { Position } from '../types/domain'
 export function HoldingsView() {
   const { analytics } = usePortfolio()
   const { portfolio } = analytics
+  const exportCsv = () =>
+    downloadText(`holdings-${portfolio.asOf || 'book'}.csv`, toHoldingsCsv(portfolio))
 
   const cols: Column<Position>[] = [
     {
@@ -63,7 +66,14 @@ export function HoldingsView() {
     <div className="view">
       <Panel
         title="Holdings"
-        hint={`${portfolio.positions.length} positions · Cash ${fmtCurrency(portfolio.cash, { compact: true })} · NAV ${fmtCurrency(portfolio.totalValue, { compact: true })}`}
+        hint={
+          <>
+            {`${portfolio.positions.length} positions · NAV ${fmtCurrency(portfolio.totalValue, { compact: true })} `}
+            <button className="btn" onClick={exportCsv}>
+              Export CSV
+            </button>
+          </>
+        }
         flush
       >
         <DataTable

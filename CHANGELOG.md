@@ -6,6 +6,17 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-22
+- Interactive Scenario Builder (factor-shock stress test) + Holdings CSV export
+
+## 2026-07-22 — Scenario Builder + CSV export
+- New **Scenario** tab: interactive factor-shock stress test (equity / rates / credit / commodity / FX sliders + historical presets) → per-holding and book P&L via data-driven betas.
+- **Holdings**: one-click **Export CSV** of the position blotter.
+
+## 2026-07-22 — Efficient frontier + walk-forward backtesting
+- **Allocation**: an **Efficient Frontier** scatter (random long-only portfolios) marking Current / Min-Var / Max-Sharpe / Risk-Parity / Equal; added max-Sharpe (tangency) weights.
+- New **Backtest** tab: walk-forward, monthly-rebalanced comparison of Current / Equal-weight / Min-Variance / Risk-Parity with cumulative curves and stats (return, vol, Sharpe, max DD) — estimators use trailing data only (no lookahead).
+
+## 2026-07-22
 - Reliable news: optional Finnhub provider + keyless GDELT fallback
 
 ## 2026-07-22 — Reliable news provider (GDELT + optional Finnhub)

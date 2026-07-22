@@ -908,3 +908,27 @@ ul.newslist li:last-child {
   border: 1px solid #6a6a6a;
   max-width: 130px;
 }
+
+/* ---- Scenario builder --------------------------------------------------- */
+.scenario-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 6px 24px;
+}
+.scenario-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 56px;
+  align-items: center;
+  gap: 10px;
+}
+.scenario-label {
+  font-size: 11px;
+}
+.scenario-val {
+  font-size: 11px;
+  text-align: right;
+}
+.scenario-row input[type='range'] {
+  width: 100%;
+  accent-color: #111;
+}

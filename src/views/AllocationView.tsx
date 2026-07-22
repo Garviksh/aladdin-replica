@@ -1,9 +1,18 @@
 import { useMemo } from 'react'
 import { BarChart } from '../components/charts/BarChart'
+import { ScatterChart } from '../components/charts/ScatterChart'
 import { Panel } from '../components/Panel'
 import { getMarket } from '../engine'
 import { covByMethod } from '../engine/covariance'
-import { minVarianceWeights, portfolioVol, riskParityWeights } from '../engine/optimize'
+import {
+  annualReturn,
+  expectedAnnualReturns,
+  maxSharpeWeights,
+  minVarianceWeights,
+  portfolioVol,
+  randomPortfolios,
+  riskParityWeights,
+} from '../engine/optimize'
 import { fmtPct } from '../lib/format'
 import { usePortfolio } from '../state/PortfolioContext'
 import type { AllocationRow } from '../types/domain'
@@ -23,6 +32,24 @@ export function AllocationView() {
   const volMin = portfolioVol(cov, minVar)
   const volRp = portfolioVol(cov, riskParity)
 
+  const mu = useMemo(() => expectedAnnualReturns(market.returns), [market])
+  const equal = new Array<number>(positions.length).fill(1 / positions.length)
+  const maxSharpe = useMemo(() => maxSharpeWeights(cov, mu), [cov, mu])
+  const cloud = useMemo(() => randomPortfolios(cov, mu, 500), [cov, mu])
+  const mk = (w: number[], label: string) => ({
+    x: portfolioVol(cov, w) * 100,
+    y: annualReturn(mu, w) * 100,
+    label,
+  })
+  const markers = [
+    mk(current, 'Current'),
+    mk(minVar, 'Min-Var'),
+    mk(maxSharpe, 'Max-Sharpe'),
+    mk(riskParity, 'Risk-Parity'),
+    mk(equal, 'Equal'),
+  ]
+  const cloudPoints = cloud.map((p) => ({ x: p.vol * 100, y: p.ret * 100 }))
+
   const toItems = (rows: AllocationRow[]) =>
     rows.map((r) => ({ label: r.label, value: r.weight, caption: fmtPct(r.weight) }))
 
@@ -39,6 +66,18 @@ export function AllocationView() {
           <BarChart items={toItems(allocation.byRegion)} />
         </Panel>
       </div>
+
+      <Panel
+        title="Efficient Frontier"
+        hint="random long-only portfolios · x = ann. vol, y = ann. return"
+      >
+        <ScatterChart
+          points={cloudPoints}
+          markers={markers}
+          xFormat={(v) => `${v.toFixed(0)}%`}
+          yFormat={(v) => `${v.toFixed(0)}%`}
+        />
+      </Panel>
 
       <Panel
         title="Optimizer — Suggested Weights"

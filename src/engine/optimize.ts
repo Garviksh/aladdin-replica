@@ -62,3 +62,46 @@ export function portfolioVol(cov: number[][], w: number[]): number {
   }
   return Math.sqrt(Math.max(0, v)) * Math.sqrt(252)
 }
+
+/** Annualized expected returns from a daily return matrix (historical mean). */
+export function expectedAnnualReturns(returns: number[][]): number[] {
+  return returns.map((r) => (r.length ? (r.reduce((a, b) => a + b, 0) / r.length) * 252 : 0))
+}
+
+export function annualReturn(mu: number[], w: number[]): number {
+  return w.reduce((a, wi, i) => a + wi * mu[i], 0)
+}
+
+/** Long-only max-Sharpe (tangency) weights: Σ⁻¹(μ−rf), clamped and normalized. */
+export function maxSharpeWeights(cov: number[][], mu: number[], rf = 0.02): number[] {
+  const k = cov.length
+  const x = solve(
+    cov.map((r) => [...r]),
+    mu.map((m) => m - rf),
+  )
+  if (!x) return new Array<number>(k).fill(1 / k)
+  const clamped = x.map((v) => Math.max(0, v))
+  return clamped.some((v) => v > 0) ? normalize(clamped) : new Array<number>(k).fill(1 / k)
+}
+
+export interface FrontierPoint {
+  vol: number
+  ret: number
+}
+
+/** A cloud of random long-only portfolios for visualizing the frontier. */
+export function randomPortfolios(cov: number[][], mu: number[], n = 400, seed = 12345): FrontierPoint[] {
+  let s = seed >>> 0
+  const rand = () => {
+    s = (s * 1664525 + 1013904223) >>> 0
+    return s / 4294967296
+  }
+  const k = cov.length
+  const pts: FrontierPoint[] = []
+  for (let i = 0; i < n; i++) {
+    const raw = Array.from({ length: k }, () => rand())
+    const w = normalize(raw)
+    pts.push({ vol: portfolioVol(cov, w), ret: annualReturn(mu, w) })
+  }
+  return pts
+}

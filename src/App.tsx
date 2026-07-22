@@ -6,6 +6,7 @@ import { StatusBar } from './components/StatusBar'
 import { TabNav, type TabDef } from './components/TabNav'
 import { PortfolioProvider, usePortfolio } from './state/PortfolioContext'
 import { AllocationView } from './views/AllocationView'
+import { BacktestView } from './views/BacktestView'
 import { ComplianceView } from './views/ComplianceView'
 import { DashboardView } from './views/DashboardView'
 import { ForecastView } from './views/ForecastView'
@@ -15,6 +16,7 @@ import { ImpactView } from './views/ImpactView'
 import { NewsView } from './views/NewsView'
 import { PerformanceView } from './views/PerformanceView'
 import { RiskView } from './views/RiskView'
+import { ScenarioBuilderView } from './views/ScenarioBuilderView'
 
 const TABS: TabDef[] = [
   { id: 'dashboard', label: 'Dashboard' },
@@ -22,8 +24,10 @@ const TABS: TabDef[] = [
   { id: 'risk', label: 'Risk' },
   { id: 'performance', label: 'Performance' },
   { id: 'forecast', label: 'Forecast' },
+  { id: 'backtest', label: 'Backtest' },
   { id: 'news', label: 'News' },
   { id: 'impact', label: 'Impact' },
+  { id: 'scenario', label: 'Scenario' },
   { id: 'allocation', label: 'Allocation' },
   { id: 'compliance', label: 'Compliance' },
   { id: 'guide', label: 'Guide' },
@@ -53,8 +57,10 @@ function Shell() {
         {tab === 'risk' && <RiskView />}
         {tab === 'performance' && <PerformanceView />}
         {tab === 'forecast' && <ForecastView />}
+        {tab === 'backtest' && <BacktestView />}
         {tab === 'news' && <NewsView />}
         {tab === 'impact' && <ImpactView />}
+        {tab === 'scenario' && <ScenarioBuilderView />}
         {tab === 'allocation' && <AllocationView />}
         {tab === 'compliance' && <ComplianceView />}
         {tab === 'guide' && <GuideView />}

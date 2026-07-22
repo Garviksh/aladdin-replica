@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import App from '../src/App'
 import { PortfolioProvider } from '../src/state/PortfolioContext'
 import { AllocationView } from '../src/views/AllocationView'
+import { BacktestView } from '../src/views/BacktestView'
 import { ComplianceView } from '../src/views/ComplianceView'
 import { ForecastView } from '../src/views/ForecastView'
 import { GuideView } from '../src/views/GuideView'
@@ -12,6 +13,7 @@ import { ImpactView } from '../src/views/ImpactView'
 import { NewsView } from '../src/views/NewsView'
 import { PerformanceView } from '../src/views/PerformanceView'
 import { RiskView } from '../src/views/RiskView'
+import { ScenarioBuilderView } from '../src/views/ScenarioBuilderView'
 
 const wrap = (node: ReactNode) =>
   renderToStaticMarkup(<PortfolioProvider>{node}</PortfolioProvider>)
@@ -31,6 +33,8 @@ describe('App smoke render', () => {
     expect(wrap(<NewsView />)).toContain('Live News')
     expect(wrap(<ImpactView />)).toContain('Impact Prediction')
     expect(wrap(<AllocationView />)).toContain('By Sector')
+    expect(wrap(<BacktestView />)).toContain('Strategy Backtest')
+    expect(wrap(<ScenarioBuilderView />)).toContain('Scenario Builder')
     expect(wrap(<ComplianceView />)).toContain('Mandate Compliance')
     expect(wrap(<GuideView />)).toContain('walkthrough')
   })
@@ -44,6 +48,8 @@ describe('App smoke render', () => {
       <NewsView key="n" />,
       <ImpactView key="im" />,
       <AllocationView key="a" />,
+      <BacktestView key="bt" />,
+      <ScenarioBuilderView key="sc" />,
       <ComplianceView key="c" />,
       <GuideView key="g" />,
     ]) {
