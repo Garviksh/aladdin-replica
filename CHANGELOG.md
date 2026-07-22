@@ -6,6 +6,9 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-22
+- Add PROJECT_HISTORY.md: complete build history + resume-ready handoff brief
+
+## 2026-07-22
 - Fix GitHub Pages deploy (auto-enable Pages) + historical scenarios, Macro tab, tool-calling Copilot
 
 ## 2026-07-22 — Real historical scenarios + Macro/alt-data tab + tool-calling Copilot

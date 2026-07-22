@@ -3,6 +3,13 @@
 Where ALADDIN·Replica is going. Organised as **Highlights → Now → Next → Later**.
 Checkboxes are actionable; contributions welcome.
 
+> **Status note:** many items below have since shipped (data-driven betas,
+> News→Impact, EWMA/shrinkage covariance, CVaR, Cornish–Fisher VaR, VaR backtest,
+> optimizer + efficient frontier, walk-forward backtest, richer perf stats,
+> FRED macro, Copilot tool-calling, …). For the accurate, up-to-date picture —
+> what's done and what's next — see **[PROJECT_HISTORY.md](PROJECT_HISTORY.md)**
+> and **[CHANGELOG.md](CHANGELOG.md)**.
+
 ---
 
 ## ⭐ Highlights (the big bets)
