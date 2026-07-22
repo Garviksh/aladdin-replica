@@ -59,6 +59,49 @@ export function PerformanceView() {
           <BarChart items={classItems} signed />
         </Panel>
       </div>
+
+      <div className="row two">
+        <Panel title="Rolling Volatility (63d)" hint="annualized">
+          <LineChart
+            series={[{ name: 'Volatility', values: performance.rolling.map((r) => r.vol * 100) }]}
+            yFormat={(v) => `${v.toFixed(0)}%`}
+            height={200}
+          />
+        </Panel>
+        <Panel title="Rolling Beta (63d)" hint={`vs ${benchmarkName}`}>
+          <LineChart
+            series={[{ name: 'Beta', values: performance.rolling.map((r) => r.beta) }]}
+            baseline={1}
+            yFormat={(v) => v.toFixed(2)}
+            height={200}
+          />
+        </Panel>
+      </div>
+
+      <Panel title="Top Drawdowns" hint="peak-to-trough" flush>
+        <table className="data">
+          <thead>
+            <tr>
+              <th className="num">Depth</th>
+              <th className="num">Length (d)</th>
+              <th>Start</th>
+              <th>Trough</th>
+            </tr>
+          </thead>
+          <tbody>
+            {performance.drawdowns.map((d, i) => (
+              <tr key={i}>
+                <td className="num">
+                  <Delta value={d.depth}>{fmtSignedPct(d.depth)}</Delta>
+                </td>
+                <td className="num">{d.length}</td>
+                <td className="mono">{d.start}</td>
+                <td className="mono">{d.trough}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </Panel>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { askOllamaStream, buildSystemPrompt, ollamaModels, pickModel } from '../assistant/ollama'
 import { respond } from '../assistant/respond'
+import { flagUnknownFigures } from '../assistant/verify'
 import { buildForecast } from '../engine/forecast'
 import { usePortfolio } from '../state/PortfolioContext'
 
@@ -50,18 +51,15 @@ export function Copilot() {
   }, [])
 
   useEffect(() => {
-    const welcome =
-      engine === 'ollama'
-        ? `Copilot online via Ollama (${model}) — running locally on your machine, nothing leaves your device. I can see your live dashboard. Ask me to analyze, predict, or explain any section.`
-        : engine === 'local'
-          ? 'Ollama not detected — using the built-in local assistant. To enable the full LLM: install Ollama, run `ollama pull llama3.2`, then `OLLAMA_ORIGINS=* ollama serve`.'
-          : 'Connecting to local Ollama…'
-    setMessages((m) => (m.length === 0 ? [{ role: 'bot', text: welcome }] : m))
-  }, [engine, model])
-
-  useEffect(() => {
     if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight
   }, [messages, open])
+
+  const status =
+    engine === 'ollama'
+      ? `Ready · OLLAMA ${model} · on-device, nothing leaves your machine.`
+      : engine === 'local'
+        ? 'Ollama not detected — using the built-in local assistant. Enable the LLM: OLLAMA_ORIGINS=* ollama serve'
+        : 'Connecting to local Ollama…'
 
   const ask = async (text: string) => {
     const q = text.trim()
@@ -81,6 +79,7 @@ export function Copilot() {
 
     setBusy(true)
     const system = buildSystemPrompt(analytics, forecast)
+    let full = ''
     try {
       await askOllamaStream(
         model,
@@ -89,14 +88,24 @@ export function Copilot() {
           { role: 'user', content: q },
         ],
         (tok) => {
+          full += tok
           setMessages((m) => {
             const c = [...m]
-            const last = c[c.length - 1]
-            c[c.length - 1] = { role: 'bot', text: last.text + tok }
+            c[c.length - 1] = { role: 'bot', text: full }
             return c
           })
         },
       )
+      const unknown = flagUnknownFigures(full, system)
+      if (unknown.length) {
+        setMessages((m) => [
+          ...m,
+          {
+            role: 'bot',
+            text: `⚠ I couldn't match these figures to your live data — verify them in the tabs: ${unknown.slice(0, 5).join(', ')}.`,
+          },
+        ])
+      }
     } catch {
       const answer = respond(q, { analytics, seed, mode })
       setMessages((m) => {
@@ -147,6 +156,10 @@ export function Copilot() {
         </button>
       </div>
       <div className="copilot-body" ref={bodyRef}>
+        <div className="copilot-status">{status}</div>
+        {messages.length === 0 ? (
+          <div className="news-msg">Ask about your book, or tap a suggestion below.</div>
+        ) : null}
         {messages.map((m, i) => (
           <div key={i} className={m.role === 'user' ? 'msg user' : 'msg bot'}>
             {m.text || (busy && i === messages.length - 1 ? '…' : '')}

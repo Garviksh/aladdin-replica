@@ -54,10 +54,14 @@ export function ImpactView() {
     try {
       const tickers = market.portfolio.positions.map((p) => p.instrument.ticker)
       const prompt = buildImpactPrompt(news.articles, tickers)
-      const text = await askOllama(model, [
-        { role: 'system', content: 'You output only valid JSON arrays. No prose, no code fences.' },
-        { role: 'user', content: prompt },
-      ])
+      const text = await askOllama(
+        model,
+        [
+          { role: 'system', content: 'You output only a valid JSON array. No prose, no code fences.' },
+          { role: 'user', content: prompt },
+        ],
+        { format: 'json' },
+      )
       const events = parseImpactEvents(text)
       if (!events.length) {
         setError('The model returned no usable events. Use Reload for fresh headlines, or try another model.')

@@ -49,6 +49,20 @@ export function correlation(xs: number[], ys: number[]): number {
   return denom > 0 ? covariance(xs, ys) / denom : 0
 }
 
+/** Symmetric correlation matrix of the given return series (diagonal = 1). */
+export function correlationMatrix(series: number[][]): number[][] {
+  const k = series.length
+  const m = Array.from({ length: k }, () => new Array<number>(k).fill(1))
+  for (let i = 0; i < k; i++) {
+    for (let j = i + 1; j < k; j++) {
+      const c = correlation(series[i], series[j])
+      m[i][j] = c
+      m[j][i] = c
+    }
+  }
+  return m
+}
+
 /** Sample skewness (population moment). */
 export function skewness(xs: number[]): number {
   const n = xs.length

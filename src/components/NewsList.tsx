@@ -5,17 +5,24 @@ export function NewsList({
   error,
   articles,
   emptyLabel = 'No headlines found.',
+  onRetry,
 }: {
   loading: boolean
   error: string | null
   articles: Article[]
   emptyLabel?: string
+  onRetry?: () => void
 }) {
   if (loading) return <div className="news-msg">Loading live headlines…</div>
   if (error)
     return (
       <div className="news-msg">
-        Couldn’t load news: {error}. Check your connection, then use Reload.
+        Couldn’t load news: {error}.{' '}
+        {onRetry ? (
+          <button className="btn" onClick={onRetry}>
+            Retry
+          </button>
+        ) : null}
       </div>
     )
   if (!articles.length) return <div className="news-msg">{emptyLabel}</div>

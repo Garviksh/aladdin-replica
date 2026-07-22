@@ -98,6 +98,7 @@ export function buildSystemPrompt(a: Analytics, forecast?: Forecast): string {
 
 RULES:
 - Answer using ONLY the live data below. Never invent tickers, prices, or numbers.
+- Quote figures EXACTLY as they appear in the snapshot; do not recompute or estimate new percentages/amounts. If a number isn't in the snapshot, say you don't have it.
 - Be concise and specific; prefer exact figures from the snapshot.
 - You may explain concepts, interpret the data, and give a reasoned outlook, but you are NOT a financial advisor — add a one-line caution when giving opinions or predictions.
 - If asked for something not in the data, say so briefly.
@@ -123,12 +124,19 @@ export interface ChatMessage {
   content: string
 }
 
-/** Non-streaming chat completion; returns the full message text. */
-export async function askOllama(model: string, messages: ChatMessage[]): Promise<string> {
+/** Non-streaming chat completion; returns the full message text.
+ *  Pass `{ format: 'json' }` to constrain the model to valid JSON output. */
+export async function askOllama(
+  model: string,
+  messages: ChatMessage[],
+  opts?: { format?: 'json' },
+): Promise<string> {
+  const body: Record<string, unknown> = { model, messages, stream: false }
+  if (opts?.format) body.format = opts.format
   const res = await fetch(`${OLLAMA_URL}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, messages, stream: false }),
+    body: JSON.stringify(body),
   })
   if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`)
   const j = (await res.json()) as { message?: { content?: string } }

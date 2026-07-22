@@ -5,6 +5,16 @@ New entries are added automatically by `npm run ship -- "message"`.
 
 <!-- SHIP -->
 
+## 2026-07-22
+- News timeout+retry, Copilot JSON+verifier, rolling metrics, correlation heatmap, optimizer
+
+## 2026-07-22 — News reliability, Copilot verifier, rolling/heatmap/optimizer
+- **News**: fetch now times out (12s) with a **Retry** button instead of hanging forever.
+- **Copilot**: structured **JSON output** for the Impact model, an **anti-hallucination** verifier that flags $-figures not in the live snapshot, and a live status line (no stale "connecting").
+- **Performance**: rolling 63-day **volatility & beta** charts + **top drawdowns** table.
+- **Risk**: **correlation heatmap** (monochrome).
+- **Allocation**: **optimizer** — min-variance & risk-parity suggested weights vs current, with a portfolio-vol comparison.
+
 ## 2026-07-21
 - Risk realism: EWMA/shrinkage covariance, fat-tail VaR, Kupiec/Christoffersen backtest
 

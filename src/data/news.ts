@@ -54,13 +54,23 @@ export function parseGdelt(json: unknown): Article[] {
   return out
 }
 
-/** Fetch live news for a query. Throws on network / non-OK responses. */
-export async function fetchNews(query: string, max = 15): Promise<Article[]> {
-  const url = `${BASE}?query=${encodeURIComponent(query)}&mode=ArtList&maxrecords=${max}&format=json&sort=DateDesc`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`News request failed (HTTP ${res.status})`)
-  const json = await res.json()
-  return parseGdelt(json)
+/** Fetch live news for a query, aborting after `timeoutMs` so it never hangs. */
+export async function fetchNews(query: string, max = 15, timeoutMs = 12000): Promise<Article[]> {
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs)
+  try {
+    const url = `${BASE}?query=${encodeURIComponent(query)}&mode=ArtList&maxrecords=${max}&format=json&sort=DateDesc&timespan=7d`
+    const res = await fetch(url, { signal: ctrl.signal })
+    if (!res.ok) throw new Error(`news service returned HTTP ${res.status}`)
+    return parseGdelt(await res.json())
+  } catch (e) {
+    if (e instanceof DOMException && e.name === 'AbortError') {
+      throw new Error('the news service timed out')
+    }
+    throw e
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
 /** Human-friendly relative time, e.g. "3h ago". */

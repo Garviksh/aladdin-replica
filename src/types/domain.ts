@@ -156,6 +156,20 @@ export interface AttributionRow {
   contribution: number
 }
 
+export interface RollingPoint {
+  t: number
+  vol: number
+  sharpe: number
+  beta: number
+}
+
+export interface DrawdownRow {
+  depth: number
+  length: number
+  start: string
+  trough: string
+}
+
 export interface Performance {
   /** Cumulative growth of 1 unit, portfolio vs benchmark. */
   series: PerfPoint[]
@@ -174,6 +188,8 @@ export interface Performance {
   /** Annualized downside deviation (fraction). */
   downsideDeviation: number
   maxDrawdown: number
+  rolling: RollingPoint[]
+  drawdowns: DrawdownRow[]
   bySector: AttributionRow[]
   byAssetClass: AttributionRow[]
 }

@@ -41,7 +41,13 @@ export function NewsView() {
 
       <Panel title={title} flush>
         <div className="news-wrap">
-          <NewsList {...news} emptyLabel="No recent headlines for this query." />
+          <NewsList
+            loading={news.loading}
+            error={news.error}
+            articles={news.articles}
+            onRetry={news.retry}
+            emptyLabel="No recent headlines for this query."
+          />
         </div>
       </Panel>
     </div>

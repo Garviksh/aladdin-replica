@@ -1,16 +1,22 @@
+import { useMemo } from 'react'
 import { BarChart } from '../components/charts/BarChart'
+import { Heatmap } from '../components/charts/Heatmap'
 import { DataTable, type Column } from '../components/DataTable'
 import { Delta } from '../components/Delta'
 import { KpiTile } from '../components/KpiTile'
 import { Panel } from '../components/Panel'
-import { COV_METHODS } from '../engine'
+import { COV_METHODS, getMarket } from '../engine'
+import { correlationMatrix } from '../engine/stats'
 import { fmtCurrency, fmtNumber, fmtPct } from '../lib/format'
 import { usePortfolio } from '../state/PortfolioContext'
 import type { ComponentRisk, ScenarioResult } from '../types/domain'
 
 export function RiskView() {
-  const { analytics, covMethod, setCovMethod } = usePortfolio()
+  const { analytics, covMethod, setCovMethod, seed, mode } = usePortfolio()
   const { risk, portfolio, scenarios } = analytics
+  const market = useMemo(() => getMarket(seed, mode), [seed, mode])
+  const corr = useMemo(() => correlationMatrix(market.returns), [market])
+  const tickers = market.portfolio.positions.map((p) => p.instrument.ticker)
   const nav = portfolio.totalValue
 
   const factorItems = risk.factorExposures.map((f) => ({
@@ -190,6 +196,10 @@ export function RiskView() {
 
       <Panel title="Contribution to Risk" hint="components sum to portfolio volatility" flush>
         <DataTable columns={compCols} rows={risk.components} rowKey={(c) => c.ticker} footer={compFooter} />
+      </Panel>
+
+      <Panel title="Correlation Matrix" hint="daily returns · darker = more correlated">
+        <Heatmap labels={tickers} matrix={corr} />
       </Panel>
     </div>
   )

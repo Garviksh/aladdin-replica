@@ -152,4 +152,13 @@ describe('buildAnalytics', () => {
   it('produces a performance series spanning the lookback window', () => {
     expect(a.performance.series.length).toBe(a.lookbackDays)
   })
+
+  it('produces rolling metrics and drawdown episodes', () => {
+    expect(a.performance.rolling.length).toBeGreaterThan(0)
+    expect(Array.isArray(a.performance.drawdowns)).toBe(true)
+    for (const r of a.performance.rolling) {
+      expect(Number.isFinite(r.vol)).toBe(true)
+      expect(Number.isFinite(r.beta)).toBe(true)
+    }
+  })
 })

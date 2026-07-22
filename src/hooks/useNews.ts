@@ -7,9 +7,15 @@ export interface NewsState {
   articles: Article[]
 }
 
-/** Fetch live news for a query in the browser. Re-fetches when the query changes. */
-export function useNews(query: string, max = 15): NewsState {
+export interface UseNews extends NewsState {
+  retry: () => void
+}
+
+/** Fetch live news for a query in the browser (with timeout + retry). */
+export function useNews(query: string, max = 15): UseNews {
+  const [nonce, setNonce] = useState(0)
   const [state, setState] = useState<NewsState>({ loading: true, error: null, articles: [] })
+
   useEffect(() => {
     let alive = true
     setState({ loading: true, error: null, articles: [] })
@@ -29,6 +35,7 @@ export function useNews(query: string, max = 15): NewsState {
     return () => {
       alive = false
     }
-  }, [query, max])
-  return state
+  }, [query, max, nonce])
+
+  return { ...state, retry: () => setNonce((n) => n + 1) }
 }

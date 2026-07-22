@@ -105,7 +105,12 @@ export function DashboardView() {
 
       <Panel title="Market News" hint="live headlines · GDELT" flush>
         <div className="news-wrap">
-          <NewsList {...news} />
+          <NewsList
+            loading={news.loading}
+            error={news.error}
+            articles={news.articles}
+            onRetry={news.retry}
+          />
         </div>
       </Panel>
     </div>
