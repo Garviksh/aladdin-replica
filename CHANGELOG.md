@@ -6,6 +6,13 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-22
+- Reliable news: optional Finnhub provider + keyless GDELT fallback
+
+## 2026-07-22 — Reliable news provider (GDELT + optional Finnhub)
+- News now supports an optional free **Finnhub** API key (stored only in your browser) for reliable market & per-company feeds; **GDELT** stays the keyless default.
+- Scope-based news fetching (market / per-holding) with timeout + retry across Dashboard, News, and Impact.
+
+## 2026-07-22
 - News timeout+retry, Copilot JSON+verifier, rolling metrics, correlation heatmap, optimizer
 
 ## 2026-07-22 — News reliability, Copilot verifier, rolling/heatmap/optimizer

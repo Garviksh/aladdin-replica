@@ -41,8 +41,9 @@ through a book:
 - **Forecast** — a seeded Monte Carlo projection of the book (percentile fan
   chart, expected value, probability of loss, horizon VaR) plus per-asset
   expected-return and price targets over 1M / 3M / 6M / 1Y horizons.
-- **News** — live market headlines and per-holding news via **GDELT** (a real,
-  keyless news API), fetched in the browser; also surfaced on the Dashboard.
+- **News** — live market & per-holding headlines, **keyless via GDELT** by
+  default with an optional free **Finnhub** key for more reliable feeds; fetched
+  in-browser with a timeout + retry, and surfaced on the Dashboard.
 - **Impact** — an Ollama-driven *News → Impact* model that turns live headlines
   into estimated per-holding and book P&L via the data-driven factor betas.
 - **Guide** — a plain-English walkthrough of how to manage a book and what every

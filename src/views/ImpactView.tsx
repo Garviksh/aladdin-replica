@@ -13,7 +13,7 @@ import { Delta } from '../components/Delta'
 import { KpiTile } from '../components/KpiTile'
 import { Panel } from '../components/Panel'
 import { getMarket } from '../data/market'
-import { MARKET_QUERY } from '../data/news'
+import { savedNewsKey } from '../data/news'
 import { estimateBetas } from '../engine/factors'
 import { useNews } from '../hooks/useNews'
 import { fmtCurrency, fmtPct, fmtSignedPct } from '../lib/format'
@@ -26,7 +26,7 @@ export function ImpactView() {
     () => estimateBetas(market.portfolio.positions, market.returns, market.benchmarkReturns),
     [market],
   )
-  const news = useNews(MARKET_QUERY, 24)
+  const news = useNews({ kind: 'market' }, savedNewsKey(), 24)
 
   const [model, setModel] = useState<string | null>(null)
   const [ollamaOff, setOllamaOff] = useState(false)

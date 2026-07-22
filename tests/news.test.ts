@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { parseGdelt, tickerQuery, timeAgo } from '../src/data/news'
+import { parseFinnhub, parseGdelt, tickerQuery, timeAgo } from '../src/data/news'
 
 const FIXTURE = {
   articles: [
@@ -21,6 +21,27 @@ const FIXTURE = {
     { url: 'https://b.com/3', title: 'Fed holds steady', seendate: '20260720T090000Z', domain: 'b.com' },
   ],
 }
+
+describe('finnhub parser', () => {
+  it('parses and de-duplicates finnhub articles', () => {
+    const raw = [
+      { headline: 'Fed holds rates', url: 'https://x.com/1', source: 'Reuters', datetime: 1_750_000_000, image: 'https://x/i.jpg' },
+      { headline: 'dup', url: 'https://x.com/1', source: 'Reuters', datetime: 1_750_000_000 },
+      { headline: '', url: 'https://x.com/2' },
+      { headline: 'no url', url: '' },
+      { headline: 'Jobs report', url: 'https://y.com/3', source: 'AP', datetime: 1_750_100_000 },
+    ]
+    const a = parseFinnhub(raw)
+    expect(a.length).toBe(2)
+    expect(a[0].source).toBe('Reuters')
+    expect(a[0].date).not.toBe('')
+  })
+
+  it('returns [] for non-array input', () => {
+    expect(parseFinnhub({})).toEqual([])
+    expect(parseFinnhub(null)).toEqual([])
+  })
+})
 
 describe('news parser', () => {
   it('parses, cleans, and de-duplicates GDELT articles', () => {

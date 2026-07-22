@@ -5,7 +5,7 @@ import { Delta } from '../components/Delta'
 import { KpiTile } from '../components/KpiTile'
 import { Panel } from '../components/Panel'
 import { NewsList } from '../components/NewsList'
-import { MARKET_QUERY } from '../data/news'
+import { savedNewsKey } from '../data/news'
 import { useNews } from '../hooks/useNews'
 import { fmtCurrency, fmtPct, fmtSignedPct } from '../lib/format'
 import { usePortfolio } from '../state/PortfolioContext'
@@ -15,7 +15,7 @@ export function DashboardView() {
   const { analytics } = usePortfolio()
   const { portfolio, risk, performance, compliance, allocation, benchmarkName, lookbackDays } =
     analytics
-  const news = useNews(MARKET_QUERY, 6)
+  const news = useNews({ kind: 'market' }, savedNewsKey(), 6)
 
   const dayPnl = portfolio.positions.reduce((a, p) => a + p.dayPnl, 0)
   const dayPct = portfolio.totalValue > 0 ? dayPnl / portfolio.totalValue : 0
