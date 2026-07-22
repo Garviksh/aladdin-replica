@@ -10,6 +10,8 @@
 import { fmtCurrency, fmtPct, fmtSignedPct } from '../lib/format'
 import type { Analytics } from '../types/domain'
 import type { Forecast } from '../engine/forecast'
+import { bakedMacro, hasMacroData } from '../data/macro'
+import { deriveMacroSignals } from '../engine/macro'
 
 export const OLLAMA_URL = 'http://localhost:11434'
 
@@ -88,6 +90,19 @@ export function snapshotText(a: Analytics, forecast?: Forecast): string {
     `Compliance: ${breaches.length} breach, ${warns.length} warning of ${a.compliance.length} rules.` +
       (breaches.length ? ` Breaches: ${breaches.map((b) => `${b.label} (${b.observed} vs ${b.limit})`).join('; ')}.` : ''),
   )
+  if (hasMacroData()) {
+    const m = bakedMacro()
+    const wanted = ['DGS10', 'T10Y2Y', 'CPIYoY', 'UNRATE', 'VIXCLS', 'FEDFUNDS']
+    const keyInds = m.indicators
+      .filter((i) => wanted.includes(i.id))
+      .map((i) => `${i.label} ${i.value}${i.unit}`)
+      .join(', ')
+    lines.push(`Macro (as of ${m.asOf}): ${keyInds}.`)
+    const sig = deriveMacroSignals(m.indicators)
+    if (sig.length) {
+      lines.push(`Macro-implied factor tilts: ${sig.map((s) => `${s.label} ${s.bias}`).join(', ')}.`)
+    }
+  }
   if (forecast) {
     lines.push(
       `1y Monte Carlo (${forecast.sims} paths): expected ${fmtCurrency(forecast.expValue, { compact: true })} (${fmtSignedPct(forecast.expReturn)}), 5-95% ${fmtCurrency(forecast.p5Value, { compact: true })}–${fmtCurrency(forecast.p95Value, { compact: true })}, P(loss) ${fmtPct(forecast.probLoss)}.`,
@@ -117,6 +132,8 @@ THE TERMINAL'S SECTIONS (what each does / how it works):
 - Forecast: Monte Carlo projection of the book (percentile fan), expected value, probability of loss, horizon VaR, and per-asset expected-return targets.
 - News: live headlines (via GDELT) for the market and each holding.
 - Impact: a "News → Impact" model (you, via Ollama) that turns live headlines into estimated per-holding and book P&L using the factor betas.
+- Scenario: interactive factor-shock stress test — drag Equity/Rates/Credit/Commodity/FX sliders or pick a historical preset to see book & per-holding P&L.
+- Macro: real macro indicators from FRED (US yields, 10Y–2Y curve, CPI, unemployment, VIX, Fed Funds, USD index) mapped to heuristic factor tilts and an illustrative "nowcast" P&L; plus a live Open-Meteo weather alt-data panel.
 - Allocation: exposure by asset class, sector, and region.
 - Compliance: mandate rules (max position, sector concentration, equity ceiling, VaR limit, cash band, min diversification) flagged pass / warning / breach.
 - Copilot (you): answer questions, explain any section, predict, and guide the user.
@@ -128,6 +145,86 @@ ${snapshotText(a, forecast)}`
 export interface ChatMessage {
   role: 'system' | 'user' | 'assistant'
   content: string
+}
+
+export interface ToolCall {
+  function: { name: string; arguments: Record<string, unknown> | string }
+}
+
+export interface RichMessage {
+  role: 'system' | 'user' | 'assistant' | 'tool'
+  content: string
+  tool_calls?: ToolCall[]
+  tool_name?: string
+}
+
+export interface ToolRunResult {
+  content: string
+  toolsUsed: string[]
+}
+
+/**
+ * Agentic tool-calling loop: the model may call the provided tools (via Ollama's
+ * function-calling API) to query the live engine, then answer from the results.
+ * Falls back to throwing if the server errors so the caller can degrade to
+ * streaming / local. Non-streaming (tool_calls need the full message).
+ */
+export async function askOllamaTools(
+  model: string,
+  messages: RichMessage[],
+  tools: unknown[],
+  execute: (name: string, args: Record<string, unknown>) => unknown,
+  maxSteps = 4,
+): Promise<ToolRunResult> {
+  const convo: RichMessage[] = [...messages]
+  const toolsUsed: string[] = []
+
+  for (let step = 0; step < maxSteps; step++) {
+    const res = await fetch(`${OLLAMA_URL}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model, messages: convo, stream: false, tools }),
+    })
+    if (!res.ok) throw new Error(`Ollama HTTP ${res.status}`)
+    const j = (await res.json()) as {
+      message?: { content?: string; tool_calls?: ToolCall[] }
+    }
+    const msg = j.message
+    const calls = msg?.tool_calls ?? []
+    if (calls.length) {
+      convo.push({ role: 'assistant', content: msg?.content ?? '', tool_calls: calls })
+      for (const tc of calls) {
+        const name = tc.function?.name ?? ''
+        let args = tc.function?.arguments as Record<string, unknown> | string
+        if (typeof args === 'string') {
+          try {
+            args = JSON.parse(args)
+          } catch {
+            args = {}
+          }
+        }
+        toolsUsed.push(name)
+        let result: unknown
+        try {
+          result = execute(name, (args as Record<string, unknown>) ?? {})
+        } catch (e) {
+          result = { error: e instanceof Error ? e.message : String(e) }
+        }
+        convo.push({ role: 'tool', content: JSON.stringify(result), tool_name: name })
+      }
+      continue
+    }
+    return { content: msg?.content ?? '', toolsUsed }
+  }
+
+  // Ran out of steps — ask once more without tools to force a written answer.
+  const res = await fetch(`${OLLAMA_URL}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model, messages: convo, stream: false }),
+  })
+  const j = (await res.json()) as { message?: { content?: string } }
+  return { content: j.message?.content ?? '', toolsUsed }
 }
 
 /** Non-streaming chat completion; returns the full message text.

@@ -22,8 +22,8 @@ local LLM (**Ollama**) that runs entirely on your machine.
 
 ## Features
 
-The terminal is organised into six tabs, mirroring how a portfolio analyst moves
-through a book:
+The terminal is organised into thirteen tabs, mirroring how a portfolio analyst
+moves through a book:
 
 - **Dashboard** — headline KPIs (NAV, day P&L, ex-ante volatility, 1-day 99%
   VaR, beta, compliance status), a portfolio-vs-benchmark chart, top movers,
@@ -31,11 +31,14 @@ through a book:
 - **Holdings** — the full, sortable position blotter: instrument, class, sector,
   quantity, price, market value, weight, day change, and unrealized P&L.
 - **Risk** — ex-ante volatility, parametric and historical VaR (95% / 99%),
-  portfolio beta, factor exposures, a component-contribution-to-risk table
-  (which sums exactly to total risk), and five historical stress scenarios.
-- **Performance** — cumulative return vs. benchmark, Sharpe, max drawdown, and
-  return attribution by sector and asset class.
-- **Allocation** — exposure breakdowns by asset class, sector, and region.
+  portfolio beta, EWMA / Ledoit–Wolf covariance options, fat-tail (Cornish–Fisher)
+  VaR, a Kupiec/Christoffersen VaR backtest, a component-contribution-to-risk
+  table (which sums exactly to total risk), and a library of historical stress
+  scenarios (several **realized from market history**).
+- **Performance** — cumulative return vs. benchmark, Sharpe/Sortino/Calmar,
+  rolling metrics, top drawdowns, and return attribution by sector and class.
+- **Backtest** — walk-forward, monthly-rebalanced comparison of Current /
+  Equal-weight / Min-Variance / Risk-Parity strategies (no look-ahead).
 - **Compliance** — a live mandate rule set (position, concentration, allocation,
   VaR, cash, and diversification limits) flagged pass / warning / breach.
 - **Forecast** — a seeded Monte Carlo projection of the book (percentile fan
@@ -46,6 +49,15 @@ through a book:
   in-browser with a timeout + retry, and surfaced on the Dashboard.
 - **Impact** — an Ollama-driven *News → Impact* model that turns live headlines
   into estimated per-holding and book P&L via the data-driven factor betas.
+- **Scenario** — an interactive factor-shock stress tester: drag Equity / Rates /
+  Credit / Commodity / FX sliders or pick a historical preset to see book and
+  per-holding P&L.
+- **Macro** — real macro indicators from **FRED** (yields, 10Y–2Y curve, CPI,
+  unemployment, VIX, Fed Funds, USD index) via `npm run refresh-macro`, mapped to
+  factor tilts and an illustrative nowcast, plus a **live Open-Meteo** weather
+  alt-data panel.
+- **Allocation** — exposure breakdowns and an optimizer (min-variance, risk-parity,
+  max-Sharpe) with an efficient-frontier scatter.
 - **Guide** — a plain-English walkthrough of how to manage a book and what every
   metric means.
 
@@ -88,7 +100,9 @@ Other scripts:
 ```bash
 npm run build         # type-check + production build to dist/
 npm run build:single  # one self-contained dist/aladdin-replica-standalone.html
-npm run refresh-data  # download REAL EOD prices (Twelve Data key, keyless fallback)
+npm run refresh-data       # REAL EOD prices (Twelve Data key, keyless fallback)
+npm run refresh-scenarios  # realized stress-scenario shocks from live history (keyless)
+npm run refresh-macro      # real macro indicators from FRED + live weather (keyless)
 npm run preview       # preview the production build
 npm run typecheck     # tsc --noEmit
 npm run lint          # eslint
@@ -147,7 +161,7 @@ src/
   assistant/             Local Copilot — knowledge base + intent engine
   state/                 PortfolioContext (seed in, analytics out)
   components/            Layout chrome, tables, KPI tiles, SVG charts, Copilot
-  views/                 The eight terminal tabs
+  views/                 The thirteen terminal tabs
 tests/                   Vitest tests: engine, forecast, assistant, render smoke
 scripts/                 inline-singlefile.mjs (single-file build helper)
 docs/                    PRODUCT_BRIEF.md and ARCHITECTURE.md (ADRs)

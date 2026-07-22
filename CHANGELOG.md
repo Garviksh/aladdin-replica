@@ -6,6 +6,15 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-22
+- Fix GitHub Pages deploy (auto-enable Pages) + historical scenarios, Macro tab, tool-calling Copilot
+
+## 2026-07-22 — Real historical scenarios + Macro/alt-data tab + tool-calling Copilot
+- **Real historical scenarios**: 8 crises (GFC 2008, COVID 2020, 2022 inflation, SVB 2023, 2018 Q4, 2015–16 China/oil, 2013 taper, 2011 euro) now use **realized factor-proxy returns** over the actual window instead of hand-calibrated shocks. The Risk tab tags each scenario **REALIZED** (from market history) vs **MODEL** and shows its window. New `npm run refresh-scenarios` recomputes them from live history (SPY/IEF/HYG/GLD/UUP).
+- **New Macro tab**: real macro indicators from **FRED** (10Y & 2Y yields, 10Y–2Y curve, CPI YoY, unemployment, VIX, Fed Funds, USD index) via `npm run refresh-macro` (keyless), mapped to heuristic **factor tilts** and an illustrative **macro nowcast** P&L through your betas — plus a **live Open-Meteo weather** alt-data panel fetched in-browser (no key). No fabricated numbers: macro shows a load gate until refreshed.
+- **Copilot tool-calling**: the local Ollama Copilot can now **query the live engine** via function-calling — `list_holdings`, `get_holding`, `get_risk`, `get_performance`, `top_risk_contributors`, `get_scenario`, `stress_test`, `price_move`, `get_macro` — grounding answers in exact, freshly-computed numbers and showing which tools it used. Falls back to streaming, then the built-in local assistant.
+- Tests: **96** (added scenarios, macro and tools suites).
+
+## 2026-07-22
 - Stress scenario library: 16 historical, calibrated scenarios (all listed, worst-first, live P&L via betas)
 
 ## 2026-07-22 — Stress scenario library (16 historical scenarios)

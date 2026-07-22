@@ -141,6 +141,10 @@ export interface ScenarioResult {
   shocks: Partial<Record<FactorKey, number>>
   pnl: number
   pnlPct: number
+  /** True when the shocks are realized factor-proxy returns over a real window. */
+  realized: boolean
+  /** Human-readable window, e.g. "Sep 2008 – Mar 2009". */
+  window?: string
 }
 
 export interface PerfPoint {

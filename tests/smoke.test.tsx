@@ -10,6 +10,7 @@ import { ForecastView } from '../src/views/ForecastView'
 import { GuideView } from '../src/views/GuideView'
 import { HoldingsView } from '../src/views/HoldingsView'
 import { ImpactView } from '../src/views/ImpactView'
+import { MacroView } from '../src/views/MacroView'
 import { NewsView } from '../src/views/NewsView'
 import { PerformanceView } from '../src/views/PerformanceView'
 import { RiskView } from '../src/views/RiskView'
@@ -35,6 +36,7 @@ describe('App smoke render', () => {
     expect(wrap(<AllocationView />)).toContain('By Sector')
     expect(wrap(<BacktestView />)).toContain('Strategy Backtest')
     expect(wrap(<ScenarioBuilderView />)).toContain('Scenario Builder')
+    expect(wrap(<MacroView />)).toContain('Macro Indicators')
     expect(wrap(<ComplianceView />)).toContain('Mandate Compliance')
     expect(wrap(<GuideView />)).toContain('walkthrough')
   })
@@ -50,6 +52,7 @@ describe('App smoke render', () => {
       <AllocationView key="a" />,
       <BacktestView key="bt" />,
       <ScenarioBuilderView key="sc" />,
+      <MacroView key="mc" />,
       <ComplianceView key="c" />,
       <GuideView key="g" />,
     ]) {

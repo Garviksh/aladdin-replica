@@ -25,7 +25,21 @@ describe('stress scenario library', () => {
     for (const r of a.scenarios) {
       expect(Number.isFinite(r.pnl)).toBe(true)
       expect(Number.isFinite(r.pnlPct)).toBe(true)
+      expect(typeof r.realized).toBe('boolean')
     }
+  })
+
+  it('marks several scenarios as realized from market history with a window', () => {
+    const realized = a.scenarios.filter((s) => s.realized)
+    expect(realized.length).toBeGreaterThanOrEqual(6)
+    for (const s of realized) {
+      expect(s.window && s.window.length > 0).toBe(true)
+      expect(Object.keys(s.shocks).length).toBeGreaterThan(0)
+    }
+    // GFC is realized and still a large loss
+    const gfc = a.scenarios.find((s) => s.key === 'gfc2008')!
+    expect(gfc.realized).toBe(true)
+    expect(gfc.pnl).toBeLessThan(0)
   })
 
   it('severe crises lose money and a benign scenario gains', () => {

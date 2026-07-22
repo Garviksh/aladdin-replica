@@ -1,0 +1,54 @@
+{
+  "asOf": "2026-07-22",
+  "source": "Realized cumulative returns of factor-proxy ETFs over each crisis window. Mapping: equity=SPY, rates=IEF (bond price; + = yields down), credit=HYG, commodity=GLD, fx=-UUP (+ = USD weaker). Seed values are representative of the episode; run `npm run refresh-scenarios` to recompute exactly from live history.",
+  "scenarios": {
+    "gfc2008": {
+      "window": "Sep 2008 – Nov 2008",
+      "range": ["2008-09-02", "2008-11-20"],
+      "realized": true,
+      "shocks": { "equity": -0.41, "rates": 0.08, "credit": -0.24, "commodity": -0.06, "fx": -0.09 }
+    },
+    "covid2020": {
+      "window": "Feb 2020 – Mar 2020",
+      "range": ["2020-02-19", "2020-03-23"],
+      "realized": true,
+      "shocks": { "equity": -0.34, "rates": 0.06, "credit": -0.2, "commodity": -0.03, "fx": -0.03 }
+    },
+    "inflation2022": {
+      "window": "Jan 2022 – Oct 2022",
+      "range": ["2022-01-03", "2022-10-12"],
+      "realized": true,
+      "shocks": { "equity": -0.25, "rates": -0.15, "credit": -0.18, "commodity": -0.09, "fx": -0.16 }
+    },
+    "svb2023": {
+      "window": "Mar 2023 (SVB week)",
+      "range": ["2023-03-06", "2023-03-13"],
+      "realized": true,
+      "shocks": { "equity": -0.045, "rates": 0.05, "credit": -0.04, "commodity": 0.05, "fx": 0.01 }
+    },
+    "selloff2018": {
+      "window": "Sep 2018 – Dec 2018",
+      "range": ["2018-09-20", "2018-12-24"],
+      "realized": true,
+      "shocks": { "equity": -0.19, "rates": 0.05, "credit": -0.06, "commodity": -0.15, "fx": 0.01 }
+    },
+    "china2015": {
+      "window": "Aug 2015 – Feb 2016",
+      "range": ["2015-08-17", "2016-02-11"],
+      "realized": true,
+      "shocks": { "equity": -0.12, "rates": 0.04, "credit": -0.08, "commodity": -0.2, "fx": -0.05 }
+    },
+    "taper2013": {
+      "window": "May 2013 – Jun 2013",
+      "range": ["2013-05-22", "2013-06-24"],
+      "realized": true,
+      "shocks": { "equity": -0.05, "rates": -0.05, "credit": -0.05, "commodity": -0.08, "fx": -0.03 }
+    },
+    "euro2011": {
+      "window": "Jul 2011 – Oct 2011",
+      "range": ["2011-07-22", "2011-10-03"],
+      "realized": true,
+      "shocks": { "equity": -0.18, "rates": 0.09, "credit": -0.12, "commodity": -0.1, "fx": -0.06 }
+    }
+  }
+}

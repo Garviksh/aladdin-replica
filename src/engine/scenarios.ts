@@ -1,21 +1,42 @@
 import type { FactorKey, Portfolio, ScenarioResult } from '../types/domain'
 import { betaOf, type BetaMap } from './factors'
+import scenarioHistoryJson from '../data/scenarioHistory.json'
 
 interface ScenarioDef {
   key: string
   label: string
   description: string
-  /** Factor returns applied under the scenario. */
+  /** Factor returns applied under the scenario (fallback / calibrated values). */
+  shocks: Partial<Record<FactorKey, number>>
+  /** Optional window label for calibrated historical episodes. */
+  window?: string
+}
+
+interface HistoryEntry {
+  window: string
+  range: [string, string]
+  realized: boolean
   shocks: Partial<Record<FactorKey, number>>
 }
 
-// Sign conventions (consistent with the instrument betas):
+const HISTORY = scenarioHistoryJson as unknown as {
+  asOf: string
+  source: string
+  scenarios: Record<string, HistoryEntry>
+}
+
+export const SCENARIO_HISTORY_META = { asOf: HISTORY.asOf, source: HISTORY.source }
+
+// Sign conventions (consistent with the instrument betas and the factor proxies
+// used to estimate them — equity=SPY, rates=IEF, credit=HYG, commodity=GLD, fx):
 //   equity    +up / −down (broad equity market)
 //   rates     +bond-friendly (yields DOWN, bond prices up) / −yields up
 //   credit    +spreads tighten (risk-on) / −spreads blow out
 //   commodity +commodities up / −down
 //   fx        +USD weaker / risk-on for foreign assets / −USD stronger, risk-off
-// Magnitudes are representative of the historical episode, not exact replays.
+//
+// Where a "realized" entry exists in scenarioHistory.json, its shocks (actual
+// factor-proxy returns over the window) override the calibrated shocks below.
 export const SCENARIOS: ScenarioDef[] = [
   {
     key: 'gfc2008',
@@ -70,12 +91,14 @@ export const SCENARIOS: ScenarioDef[] = [
     label: '2000 Dot-com Bust',
     description: '2000–02 · tech-multiple collapse concentrated in growth equities.',
     shocks: { equity: -0.3, rates: 0.06, credit: -0.06 },
+    window: '2000–2002',
   },
   {
     key: 'blackmonday1987',
     label: '1987 Black Monday',
     description: 'Oct 1987 · one-day ~22% equity crash; sharp risk-off.',
     shocks: { equity: -0.25, rates: 0.05, credit: -0.05 },
+    window: 'Oct 1987',
   },
   {
     key: 'stagflation',
@@ -115,15 +138,29 @@ export const SCENARIOS: ScenarioDef[] = [
   },
 ]
 
+/** Resolve the effective shocks for a scenario, preferring realized history. */
+function resolveShocks(def: ScenarioDef): {
+  shocks: Partial<Record<FactorKey, number>>
+  realized: boolean
+  window?: string
+} {
+  const hist = HISTORY.scenarios[def.key]
+  if (hist?.realized && hist.shocks) {
+    return { shocks: hist.shocks, realized: true, window: hist.window }
+  }
+  return { shocks: def.shocks, realized: false, window: def.window }
+}
+
 /** Apply each scenario's factor shocks to the book and return the P&L impact. */
 export function runScenarios(portfolio: Portfolio, betas?: BetaMap): ScenarioResult[] {
   const invested = portfolio.investedValue
   return SCENARIOS.map((s) => {
+    const { shocks, realized, window } = resolveShocks(s)
     let pnl = 0
     for (const p of portfolio.positions) {
       let r = 0
-      for (const key of Object.keys(s.shocks) as FactorKey[]) {
-        r += betaOf(betas, p, key) * (s.shocks[key] ?? 0)
+      for (const key of Object.keys(shocks) as FactorKey[]) {
+        r += betaOf(betas, p, key) * (shocks[key] ?? 0)
       }
       pnl += p.marketValue * r
     }
@@ -131,9 +168,11 @@ export function runScenarios(portfolio: Portfolio, betas?: BetaMap): ScenarioRes
       key: s.key,
       label: s.label,
       description: s.description,
-      shocks: s.shocks,
+      shocks,
       pnl,
       pnlPct: invested > 0 ? pnl / invested : 0,
+      realized,
+      window,
     }
   })
 }

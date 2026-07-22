@@ -1,7 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { askOllamaStream, buildSystemPrompt, ollamaModels, pickModel } from '../assistant/ollama'
+import {
+  askOllamaStream,
+  askOllamaTools,
+  buildSystemPrompt,
+  ollamaModels,
+  pickModel,
+} from '../assistant/ollama'
+import { makeToolContext, runTool, TOOL_SPECS } from '../assistant/tools'
 import { respond } from '../assistant/respond'
 import { flagUnknownFigures } from '../assistant/verify'
+import { getMarket } from '../engine'
 import { buildForecast } from '../engine/forecast'
 import { usePortfolio } from '../state/PortfolioContext'
 
@@ -15,14 +23,17 @@ type Engine = 'checking' | 'ollama' | 'local'
 const SUGGESTIONS = [
   "What's my risk?",
   'Any breaches?',
-  'Predict the year ahead',
-  'Explain the Risk tab',
+  'Top 3 risk drivers',
   'What if NVDA drops 20%?',
+  'Compare 2008 vs COVID',
+  'Explain the Macro tab',
 ]
 
 export function Copilot() {
   const { analytics, seed, mode } = usePortfolio()
   const forecast = useMemo(() => buildForecast(seed, 252, 300, mode), [seed, mode])
+  const market = useMemo(() => getMarket(seed, mode), [seed, mode])
+  const toolCtx = useMemo(() => makeToolContext(analytics, market), [analytics, market])
 
   const [open, setOpen] = useState(false)
   const [engine, setEngine] = useState<Engine>('checking')
@@ -56,7 +67,7 @@ export function Copilot() {
 
   const status =
     engine === 'ollama'
-      ? `Ready · OLLAMA ${model} · on-device, nothing leaves your machine.`
+      ? `Ready · OLLAMA ${model} · tool-calling on live data · on-device, nothing leaves your machine.`
       : engine === 'local'
         ? 'Ollama not detected — using the built-in local assistant. Enable the LLM: OLLAMA_ORIGINS=* ollama serve'
         : 'Connecting to local Ollama…'
@@ -79,41 +90,59 @@ export function Copilot() {
 
     setBusy(true)
     const system = buildSystemPrompt(analytics, forecast)
-    let full = ''
+    const setLast = (text: string) =>
+      setMessages((m) => {
+        const c = [...m]
+        c[c.length - 1] = { role: 'bot', text }
+        return c
+      })
     try {
-      await askOllamaStream(
+      // Primary path: agentic tool-calling — the model queries the live engine.
+      const { content, toolsUsed } = await askOllamaTools(
         model,
         [
           { role: 'system', content: system },
           { role: 'user', content: q },
         ],
-        (tok) => {
-          full += tok
-          setMessages((m) => {
-            const c = [...m]
-            c[c.length - 1] = { role: 'bot', text: full }
-            return c
-          })
-        },
+        TOOL_SPECS,
+        (name, args) => runTool(name, args, toolCtx),
       )
-      const unknown = flagUnknownFigures(full, system)
-      if (unknown.length) {
-        setMessages((m) => [
-          ...m,
-          {
-            role: 'bot',
-            text: `⚠ I couldn't match these figures to your live data — verify them in the tabs: ${unknown.slice(0, 5).join(', ')}.`,
-          },
-        ])
+      const used = [...new Set(toolsUsed)]
+      const note = used.length ? `\n\n— queried live data: ${used.join(', ')}` : ''
+      setLast((content || '(no answer)') + note)
+      // Tool results are already exact engine numbers; only verify snapshot-only answers.
+      if (!used.length) {
+        const unknown = flagUnknownFigures(content, system)
+        if (unknown.length) {
+          setMessages((m) => [
+            ...m,
+            {
+              role: 'bot',
+              text: `⚠ I couldn't match these figures to your live data — verify them in the tabs: ${unknown.slice(0, 5).join(', ')}.`,
+            },
+          ])
+        }
       }
     } catch {
-      const answer = respond(q, { analytics, seed, mode })
-      setMessages((m) => {
-        const c = [...m]
-        c[c.length - 1] = { role: 'bot', text: `(Ollama unavailable — local answer)\n${answer}` }
-        return c
-      })
-      setEngine('local')
+      // Fallback 1: plain streaming (no tools).
+      let full = ''
+      try {
+        await askOllamaStream(
+          model,
+          [
+            { role: 'system', content: system },
+            { role: 'user', content: q },
+          ],
+          (tok) => {
+            full += tok
+            setLast(full)
+          },
+        )
+      } catch {
+        // Fallback 2: built-in local assistant.
+        setLast(`(Ollama unavailable — local answer)\n${respond(q, { analytics, seed, mode })}`)
+        setEngine('local')
+      }
     } finally {
       setBusy(false)
     }

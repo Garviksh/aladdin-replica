@@ -52,8 +52,31 @@ export function RiskView() {
   )
 
   const scenCols: Column<ScenarioResult>[] = [
-    { key: 's', header: 'Scenario', render: (s) => <strong>{s.label}</strong> },
+    {
+      key: 's',
+      header: 'Scenario',
+      render: (s) => (
+        <span>
+          <strong>{s.label}</strong>
+          {s.window ? <span className="muted"> · {s.window}</span> : null}
+        </span>
+      ),
+    },
     { key: 'd', header: 'Description', render: (s) => <span className="muted">{s.description}</span> },
+    {
+      key: 'basis',
+      header: 'Basis',
+      render: (s) =>
+        s.realized ? (
+          <span className="badge pass" title="Realized factor-proxy returns over the actual window">
+            REALIZED
+          </span>
+        ) : (
+          <span className="badge" title="Calibrated / hypothetical factor shocks">
+            MODEL
+          </span>
+        ),
+    },
     {
       key: 'pnl',
       header: 'P&L',
@@ -67,6 +90,7 @@ export function RiskView() {
       render: (s) => <Delta value={s.pnlPct}>{fmtPct(Math.abs(s.pnlPct))}</Delta>,
     },
   ]
+  const realizedCount = scenarios.filter((s) => s.realized).length
 
   return (
     <div className="view">
@@ -191,7 +215,7 @@ export function RiskView() {
 
       <Panel
         title="Stress Scenarios"
-        hint={`${scenarios.length} historical scenarios · worst first · P&L via your betas`}
+        hint={`${scenarios.length} scenarios · ${realizedCount} realized from market history · worst first`}
         flush
       >
         <DataTable
