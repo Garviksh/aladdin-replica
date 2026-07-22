@@ -185,14 +185,21 @@ export function RiskView() {
         </Panel>
       </div>
 
-      <div className="row two">
-        <Panel title="Factor Exposures" hint="weighted net beta">
-          <BarChart items={factorItems} signed />
-        </Panel>
-        <Panel title="Stress Scenarios" flush>
-          <DataTable columns={scenCols} rows={scenarios} rowKey={(s) => s.key} />
-        </Panel>
-      </div>
+      <Panel title="Factor Exposures" hint="weighted net beta">
+        <BarChart items={factorItems} signed />
+      </Panel>
+
+      <Panel
+        title="Stress Scenarios"
+        hint={`${scenarios.length} historical scenarios · worst first · P&L via your betas`}
+        flush
+      >
+        <DataTable
+          columns={scenCols}
+          rows={[...scenarios].sort((a, b) => a.pnl - b.pnl)}
+          rowKey={(s) => s.key}
+        />
+      </Panel>
 
       <Panel title="Contribution to Risk" hint="components sum to portfolio volatility" flush>
         <DataTable columns={compCols} rows={risk.components} rowKey={(c) => c.ticker} footer={compFooter} />

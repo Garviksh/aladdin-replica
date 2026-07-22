@@ -6,6 +6,15 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-22
+- Stress scenario library: 16 historical, calibrated scenarios (all listed, worst-first, live P&L via betas)
+
+## 2026-07-22 — Stress scenario library (16 historical scenarios)
+- **Risk → Stress Scenarios** now ships a broad, historically-calibrated library of **16** named scenarios: 2008 GFC, 2020 COVID crash, 2022 inflation & Fed hikes, 2023 regional-banking crisis, 2018 Q4 sell-off, 2015–16 China deval & oil crash, 2013 taper tantrum, 2011 euro debt & US downgrade, 2000 dot-com bust, 1987 Black Monday, stagflation, oil supply shock, rate shock (+200bps), credit crunch, broad risk-off, and soft landing.
+- Each scenario computes **live P&L through your portfolio's data-driven factor betas**; the panel lists **all** of them sorted worst-first with $ P&L and % NAV, and updates whenever the book or covariance model changes.
+- Documented factor sign conventions (equity/rates/credit/commodity/FX) and magnitudes representative of each episode.
+- Copilot snapshot now surfaces the worst-case stress scenario.
+
+## 2026-07-22
 - Interactive Scenario Builder (factor-shock stress test) + Holdings CSV export
 
 ## 2026-07-22 — Scenario Builder + CSV export

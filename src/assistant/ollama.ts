@@ -66,6 +66,12 @@ export function snapshotText(a: Analytics, forecast?: Forecast): string {
   lines.push(
     `Tail: Cornish-Fisher VaR99 ${fmtCurrency(r.cfVar99_1d)}, historical VaR99 ${fmtCurrency(r.histVar99_1d)}, skew ${r.skew.toFixed(2)}, excess kurtosis ${r.exKurt.toFixed(2)}. VaR backtest 99%: ${bt99 ? `${bt99.exceptions} exceptions vs ${bt99.expected.toFixed(1)} expected (${bt99.pass ? 'PASS' : 'FAIL'})` : 'n/a'}.`,
   )
+  const worst = [...a.scenarios].sort((x, y) => x.pnl - y.pnl)[0]
+  if (worst) {
+    lines.push(
+      `Worst of ${a.scenarios.length} stress scenarios: ${worst.label} → ${fmtSignedPct(worst.pnlPct)} (${fmtCurrency(worst.pnl, { compact: true })}).`,
+    )
+  }
   lines.push(
     `Performance: total ${fmtSignedPct(p.totalReturn)} vs benchmark ${fmtSignedPct(p.benchmarkReturn)} (active ${fmtSignedPct(p.activeReturn)}), Sharpe ${p.sharpe.toFixed(2)}, Sortino ${p.sortino.toFixed(2)}, Calmar ${p.calmar.toFixed(2)}, InfoRatio ${p.informationRatio.toFixed(2)}, TE ${fmtPct(p.trackingError)}, max drawdown ${fmtSignedPct(p.maxDrawdown)}.`,
   )
