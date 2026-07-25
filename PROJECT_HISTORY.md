@@ -189,36 +189,24 @@ Every feature was shipped through this loop — keep doing it:
 
 ---
 
-## 7. Upcoming targets (prioritized backlog)
+## 7. Scope status
 
-The full annotated backlog is in `ROADMAP.md` (note: many of its checkboxes are now
-done — trust THIS file + CHANGELOG.md for current status). What remains, in rough
-priority order:
+**v1.0 is feature complete.** The authoritative statement of what is in, what is
+out, and why lives in **[SCOPE.md](SCOPE.md)** — read it before adding anything.
 
-1. **Deploy live** *(in flight)* — make repo public, enable Pages, verify
-   `https://garviksh.github.io/aladdin-replica/` loads and all keyless feeds work there.
-2. **News-adjusted forecast** — blend the News→Impact estimates into the Monte Carlo
-   forecast (shift drift / widen bands); show "with news" vs "baseline" fan.
-3. **Weather → commodity/energy signal** — wire the Open-Meteo feed into an actual
-   factor tilt (e.g. extreme heat/cold in Houston → energy demand proxy → commodity
-   factor), feeding the Macro nowcast honestly (label as heuristic).
-4. **Transaction costs & turnover** in the walk-forward backtest (bps per rebalance,
-   net-of-cost curves) + rebalance recommendations on Allocation.
-5. **Copilot RAG** — retrieval over `docs/ARCHITECTURE.md` + Guide content so the
-   Copilot can explain *how* each metric is computed; keep tool-calling for numbers.
-6. **Tearsheet export** — one-page PDF/HTML report (perf + risk + scenarios) from the
-   Performance tab.
-7. **Portfolio import & persistence** — CSV/broker import, cost basis, realized P&L,
-   multiple books, localStorage persistence (Ghostfolio-inspired).
-8. **Fama–French factor set** — Mkt-RF, SMB, HML (+momentum) from Ken French data;
-   rolling factor exposures + alpha on Performance.
-9. **Hierarchical Risk Parity (HRP)** optimizer variant; CDaR; Omega/tail ratio;
-   up/down capture.
-10. **Fixed income analytics** — duration/convexity for the bond ETFs; rate-shock P&L
-    from duration rather than beta.
-11. **Student-t / bootstrap Monte Carlo** forecast option (fat tails).
-12. **Hosted-LLM fallback** for the Copilot when Ollama isn't running (explicitly
-    opt-in, since it breaks the zero-leak default).
+One item remains open, and it needs no code:
+
+1. **Deploy live** — make the repo public, enable Pages, re-run `deploy.yml`.
+   Pages requires a public repo on the free plan; that is the sole cause of every
+   historical deploy failure. Commands in `SCOPE.md` §6.
+   Target: `https://garviksh.github.io/aladdin-replica/`.
+
+Everything else once tracked here — News-adjusted forecast, weather→commodity
+tilt, transaction costs, Copilot RAG, tearsheet export, portfolio import,
+Fama–French, HRP/CDaR, fixed-income duration, bootstrap Monte Carlo, hosted-LLM
+fallback — is **deliberately excluded from v1.0**, with the reasoning recorded in
+`SCOPE.md` §5. They are not unfinished work. Reopening one means editing SCOPE.md
+first and justifying it against the four principles in §2.
 
 ---
 
@@ -245,12 +233,13 @@ priority order:
 ## 9. How to resume on a fresh account (checklist)
 
 1. `git clone https://github.com/Garviksh/aladdin-replica && cd aladdin-replica && npm install`
-2. Read this file, then skim `CHANGELOG.md` (what shipped last) and `ROADMAP.md`.
+2. Read `SCOPE.md` (what v1.0 is and is not), then this file, then skim
+   `CHANGELOG.md` (what shipped last).
 3. `npm test` — expect 96 passing. `npm run dev` — expect the data gate or DATA: LIVE.
 4. Refresh data if stale: `TWELVE_DATA_KEY=… npm run refresh-data`, then
    `npm run refresh-scenarios` and `npm run refresh-macro`.
 5. For the Copilot: install Ollama, `ollama pull llama3.2`, `OLLAMA_ORIGINS=* ollama serve`.
-6. Pick the next item from §7, follow the verification workflow in §6, and ship with
+6. Check `SCOPE.md` before building anything, follow the verification workflow in §6, and ship with
    `npm run ship -- "message"` — it updates the changelog automatically.
 7. **Update this file** (§2 snapshot, §3 history, §7 backlog) whenever a major feature
    lands, so the next session can resume just as cleanly.

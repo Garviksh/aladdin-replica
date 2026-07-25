@@ -192,22 +192,21 @@ Pushing to `main` triggers the GitHub Pages workflow
 Actions** on the repo. The build uses a relative base path, so it also works from
 any static host or subdirectory.
 
-## Roadmap
+## Scope & status
 
-Complete build history, current status and resume-ready handoff brief in
-**[PROJECT_HISTORY.md](PROJECT_HISTORY.md)** · full plan in **[ROADMAP.md](ROADMAP.md)** · real-product context in
-**[docs/ALADDIN.md](docs/ALADDIN.md)** · competitive analysis & accuracy
-scorecard in **[docs/BENCHMARKS.md](docs/BENCHMARKS.md)**. Headline bets:
+**v1.0 — feature complete.** All thirteen tabs ship real, computed numbers;
+typecheck, lint, tests and build are green in CI.
 
-- **News → Impact Prediction (Ollama)** — turn live headlines into quantified,
-  per-holding market-impact estimates and a news-adjusted forecast.
-- **Real-world / alt-data factors** — weather & climate, energy/commodity spot
-  prices, macro releases (CPI, jobs, Fed), and geopolitical event risk fed into
-  the factor model and the Copilot's reasoning.
-- **Real, data-driven factor betas** — regress holdings on real factor-proxy ETFs
-  so exposures and stress/impact numbers are fully data-driven.
-- Live in-browser prices (BYO key) · correlation heatmap · efficient-frontier
-  optimizer · alerts · backtesting · fixed-income module · PDF export.
+What is in v1.0, what is deliberately excluded and why, and the definition of
+done are settled in **[SCOPE.md](SCOPE.md)** — that document is authoritative
+where anything else disagrees.
+
+Supporting reading: build history and engineering handoff in
+**[PROJECT_HISTORY.md](PROJECT_HISTORY.md)** · release log in
+**[CHANGELOG.md](CHANGELOG.md)** · real-product context in
+**[docs/ALADDIN.md](docs/ALADDIN.md)** · competitive analysis and accuracy
+scorecard in **[docs/BENCHMARKS.md](docs/BENCHMARKS.md)** · design decisions and
+methodology in **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**.
 
 ## License
 

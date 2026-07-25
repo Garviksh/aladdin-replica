@@ -2,7 +2,7 @@
 
 An honest assessment of ALADDIN·Replica against comparable open-source and
 commercial tools, with an accuracy scorecard and a prioritized plan to close the
-gaps. Improvement items are tracked in [`ROADMAP.md`](../ROADMAP.md).
+gaps. What is in and out of v1.0 is settled in [`SCOPE.md`](../SCOPE.md).
 
 > Method note: this analysis is from domain knowledge (through mid-2025); live
 > web lookups were unavailable in the build environment. Verify current
@@ -72,8 +72,11 @@ institutional-accuracy risk system.** The gap is well-understood and closable.
 4. **VaR backtest (Kupiec/Christoffersen)** — *proves* the risk numbers.
 5. **Richer performance stats + rolling charts** (empyrical-style).
 6. **Optimizer (efficient frontier / HRP)** and **backtesting**.
-7. **Ollama upgrades** — tool-calling, RAG over holdings/news, structured JSON
-   output, larger context, anti-hallucination verifier (see ROADMAP).
+7. **Ollama upgrades** — tool-calling, structured JSON output, larger context,
+   anti-hallucination verifier.
+
+Items 1–7 shipped in v1.0. Anything still listed as a gap above is excluded on
+purpose — see `SCOPE.md` §5 for which, and why.
 
 Each step is independently shippable and unit-testable, keeping the "every number
 is verified" property intact.
