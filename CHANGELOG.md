@@ -6,6 +6,9 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-25
+- Remove orphaned chart scale module
+
+## 2026-07-25
 - v1.0 scope: add SCOPE.md, retire stale ROADMAP, shared chart axis helper
 
 ## 2026-07-25
