@@ -6,6 +6,9 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-25
+- SCOPE: browser deploy steps, gh CLI now optional
+
+## 2026-07-25
 - Remove orphaned chart scale module
 
 ## 2026-07-25

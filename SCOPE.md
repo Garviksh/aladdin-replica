@@ -111,15 +111,27 @@ declined for v1.0.
 public repository on the free plan; the repository is currently private, which
 is the sole cause of every historical deploy failure.
 
-To close it:
+To close it — two steps in the browser, no CLI needed:
+
+1. **Make the repository public.**
+   `Settings → General → Danger Zone → Change repository visibility → Public`.
+2. **Run the deploy.**
+   `Actions → Deploy to GitHub Pages → Run workflow` on `main`. The workflow's
+   `actions/configure-pages@v5` step has `enablement: true`, so it turns Pages on
+   itself — no separate Pages setup required.
+
+Target: `https://garviksh.github.io/aladdin-replica/`. First deploy takes a
+couple of minutes; the URL then appears under `Settings → Pages`.
+
+Equivalent via the GitHub CLI, if `gh` is installed
+(`winget install --id GitHub.cli`, then `gh auth login`):
 
 ```bash
 gh repo edit Garviksh/aladdin-replica --visibility public --accept-visibility-change-consequences
-gh api --method POST /repos/Garviksh/aladdin-replica/pages -f build_type=workflow
 gh workflow run deploy.yml
 ```
 
-Target: `https://garviksh.github.io/aladdin-replica/`. No code change required.
+No code change is required either way.
 
 ## 7. Verifying a change
 
