@@ -107,9 +107,10 @@ export function BacktestView() {
 
       <p className="disclaimer">
         Walk-forward backtest on historical data — estimators use only trailing data (no lookahead).
-        Every strategy starts equal-weighted, pays to reach its first target, then pays turnover at
-        each rebalance, so monthly-rebalanced strategies are not compared against buy-and-hold on
-        terms buy-and-hold never gets.{' '}
+        Every strategy starts from cash, pays to establish its first book, then pays turnover at each
+        rebalance, so monthly-rebalanced strategies are not compared against buy-and-hold on terms
+        buy-and-hold never gets — and no strategy gets a free entry into its own starting
+        allocation.{' '}
         {reordered
           ? `At ${bt.costBps}bps costs change the ranking — ${bestGross.name} leads gross, ${bestNet.name} leads net.`
           : `At ${bt.costBps}bps, ${bestNet.name} leads on both gross and net return.`}{' '}

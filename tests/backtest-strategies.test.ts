@@ -70,6 +70,16 @@ describe('transaction costs', () => {
     expect(hold.costDrag).toBeLessThan(mv.costDrag)
   })
 
+  it('gives no strategy a free entry into its starting book', () => {
+    // Every strategy starts from cash. Initialising at any particular
+    // allocation would hand a free entry to whichever strategy targets it —
+    // equal-weight, most obviously.
+    for (const s of bt.strategies) {
+      expect(s.annualTurnover).toBeGreaterThan(0)
+      expect(s.costDrag).toBeGreaterThan(0)
+    }
+  })
+
   it('leaves the gross result unchanged by the cost assumption', () => {
     // Costs must not feed back into the strategy's own weight decisions.
     for (const s of dear.strategies) {

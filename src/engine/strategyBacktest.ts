@@ -53,11 +53,15 @@ function turnoverBetween(from: number[], to: number[]): number {
  * trailing window ONLY (no lookahead), then applied to the following days.
  * Compares Current (buy & hold), Equal-weight, Min-Variance, and Risk-Parity.
  *
- * Rebalancing is charged. Every strategy starts from an equal-weight book and
- * pays to reach its first target, then pays ½·Σ|Δw| · costBps at each
- * subsequent rebalance. Without this, strategies that trade every month are
- * compared against buy-and-hold on terms buy-and-hold never gets, which
- * systematically flatters the optimizers.
+ * Rebalancing is charged. Every strategy starts from **cash** — no free initial
+ * book — pays ½·Σ|Δw| · costBps to establish its first allocation, and pays the
+ * same on every subsequent rebalance. Without this, strategies that trade every
+ * month are compared against buy-and-hold on terms buy-and-hold never gets,
+ * which systematically flatters the optimizers.
+ *
+ * Starting from cash rather than from equal weight matters: initialising at any
+ * particular allocation hands a free entry to whichever strategy happens to
+ * target it. From zero, every strategy pays for the book it chooses.
  */
 export function runStrategyBacktest(
   returns: number[][],
@@ -79,7 +83,8 @@ export function runStrategyBacktest(
   ]
 
   const results: StrategyResult[] = strategies.map(({ name, fn }) => {
-    let w = new Array<number>(k).fill(1 / k)
+    // Start flat: every strategy pays to establish the book it wants.
+    let w = new Array<number>(k).fill(0)
     const daily: number[] = []
     const curve: { t: number; v: number }[] = []
     let cum = 1

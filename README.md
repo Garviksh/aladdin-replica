@@ -118,11 +118,17 @@ free, the strategies that trade constantly were being compared against
 buy-and-hold on terms buy-and-hold never gets — so they won partly by
 construction, and the chart looked like a result when it was an artifact.
 
-Now every strategy starts equal-weighted, pays to reach its first target, and
-pays `½·Σ|Δw| · costBps` of traded notional at each rebalance. The table shows
-gross and net side by side, plus annual turnover per strategy, and the cost
-assumption is a control on the page rather than a constant buried in a file —
-because the honest thing to do with an assumption is let the reader move it.
+Now every strategy starts **from cash**, pays `½·Σ|Δw| · costBps` of traded
+notional to establish its first book, and pays the same at every rebalance. The
+table shows gross and net side by side, plus annual turnover per strategy, and
+the cost assumption is a control on the page rather than a constant buried in a
+file — because the honest thing to do with an assumption is let the reader move
+it.
+
+Starting from cash rather than from equal weight was the second bug. Initialising
+every strategy at equal weight meant Equal-weight was already at its target on
+day one and never paid anything at all — I had removed one structural bias and
+introduced another. From zero, every strategy pays for the book it chooses.
 
 Default is 10bps one-way, deliberately conservative for liquid US equity and ETF
 exposure. Set it to 0 to see what a frictionless backtest would have claimed.

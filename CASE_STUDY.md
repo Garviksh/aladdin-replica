@@ -82,12 +82,20 @@ being compared against buy-and-hold on terms buy-and-hold never gets. They won
 partly by construction. The chart looked like a finding; it was an artifact of my
 own accounting.
 
-The fix: every strategy now starts equal-weighted, pays to reach its first
-target, and pays `½·Σ|Δw| · costBps` of traded notional at each rebalance. The
+The fix: every strategy now starts from cash, pays `½·Σ|Δw| · costBps` of traded
+notional to establish its first book, and pays the same at every rebalance. The
 table reports gross and net side by side with per-strategy annual turnover, and
 the cost assumption is a control on the page — 0, 5, 10, 20, 50bps — rather than
 a constant buried in a source file. Default is 10bps one-way, deliberately
 conservative for liquid US equity and ETF exposure.
+
+The first version of the fix was also wrong, which is the part I find more
+instructive. I initialised every strategy at equal weight — so Equal-weight was
+already at its target on day one and paid nothing, ever. I had removed one
+structural bias and introduced another in the same change. Starting every
+strategy from cash is the version that holds: you cannot have a book without
+buying it, and no strategy should get a free entry into the allocation it happens
+to prefer. There is now a test asserting exactly that.
 
 Set it to 0 and you see what a frictionless backtest would have claimed. That
 comparison is now the most useful thing on the tab.

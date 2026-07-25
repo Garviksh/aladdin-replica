@@ -6,6 +6,9 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-25
+- Charge transaction costs from cash; reposition docs for review
+
+## 2026-07-25
 - Charge transaction costs in backtest; reposition docs for review
 
 ## 2026-07-25
