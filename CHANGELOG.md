@@ -5,6 +5,9 @@ New entries are added automatically by `npm run ship -- "message"`.
 
 <!-- SHIP -->
 
+## 2026-07-25
+- Trim stale roadmap, shared chart scale helper
+
 ## 2026-07-22
 - Add PROJECT_HISTORY.md: complete build history + resume-ready handoff brief
 
