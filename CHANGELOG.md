@@ -6,6 +6,9 @@ New entries are added automatically by `npm run ship -- "message"`.
 <!-- SHIP -->
 
 ## 2026-07-25
+- Refresh market and macro data; make macro tests data-agnostic
+
+## 2026-07-25
 - SCOPE: browser deploy steps, gh CLI now optional
 
 ## 2026-07-25

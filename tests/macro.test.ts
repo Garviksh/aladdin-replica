@@ -57,9 +57,11 @@ describe('macro signal engine', () => {
     expect(nc.signals.length).toBeGreaterThan(0)
   })
 
-  it('ships with an empty macro seed until refresh-macro is run', () => {
-    // No fabricated macro numbers baked in.
-    expect(hasMacroData()).toBe(false)
-    expect(bakedMacro().indicators).toEqual([])
+  it('never reports macro data as loaded without indicators behind it', () => {
+    // The real invariant: no fabricated macro numbers. The gate must track the
+    // baked data, whether the seed is still empty or refresh-macro has run.
+    const m = bakedMacro()
+    expect(hasMacroData()).toBe(m.indicators.length > 0)
+    if (!hasMacroData()) expect(m.indicators).toEqual([])
   })
 })

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildAnalytics, getMarket } from '../src/engine'
 import { makeToolContext, runTool, TOOL_SPECS } from '../src/assistant/tools'
+import { hasMacroData } from '../src/data/macro'
 
 const analytics = buildAnalytics(20260721, 'sim')
 const market = getMarket(20260721, 'sim')
@@ -58,9 +59,10 @@ describe('copilot tool layer', () => {
     expect(one.realized).toBe(true)
   })
 
-  it('get_macro reports not-loaded until refresh-macro is run', () => {
+  it('get_macro reports a loaded state consistent with the baked data', () => {
     const m = runTool('get_macro', {}, ctx) as Record<string, unknown>
-    expect(m.loaded).toBe(false)
+    expect(m.loaded).toBe(hasMacroData())
+    if (!hasMacroData()) expect(m.note).toContain('refresh-macro')
   })
 
   it('returns an error object for an unknown tool', () => {

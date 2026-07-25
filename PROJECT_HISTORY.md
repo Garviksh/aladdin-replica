@@ -222,7 +222,12 @@ first and justifying it against the four principles in §2.
   the reliable path; keyless is best-effort.
 - `vite.config.ts` uses `base: './'` so the build works from any sub-path (Pages).
 - Vite writes `vite.config.ts.timestamp-*.mjs` files — already gitignored; don't commit.
-- Tests must not assume real data is loaded (see `hasRealData()` / data-agnostic tests).
+- Tests must not assume real data is loaded — **and must not assume it isn't.**
+  `marketData.json`, `macroData.json` and `scenarioHistory.json` ship empty and get
+  filled by the refresh scripts before a deploy, so a test asserting
+  `hasMacroData() === false` breaks the moment the data lands. Assert the
+  *invariant* instead (the gate agrees with the data), not the current state.
+  See `hasRealData()` / `hasMacroData()` and the tests around them.
 - The Copilot verifier (`verify.ts`) flags $-figures not in the snapshot — keep the
   snapshot (`snapshotText`) updated when adding metrics, or answers get flagged.
 - If developing inside a sandboxed/mounted environment where git/npm fail on the mount:
