@@ -47,7 +47,7 @@ Thirteen tabs, all shipped and functional:
 | Holdings | Sortable position blotter + CSV export |
 | Risk | Parametric / historical / Cornish–Fisher VaR, CVaR, Sample / EWMA / Ledoit–Wolf covariance, Kupiec + Christoffersen VaR backtest, component contribution-to-risk, correlation heatmap, 16 stress scenarios (8 realized from market history) |
 | Performance | Cumulative vs benchmark, Sharpe / Sortino / Calmar / IR / tracking error, rolling 63d vol & beta, top drawdowns, attribution by sector and class |
-| Backtest | Walk-forward, monthly-rebalanced Current / Equal / Min-Var / Risk-Parity, trailing-window estimation, no look-ahead |
+| Backtest | Walk-forward, monthly-rebalanced Current / Equal / Min-Var / Risk-Parity, trailing-window estimation, no look-ahead, **net of transaction costs** with gross/net columns, per-strategy turnover, and a 0–50bps cost selector |
 | Compliance | Live mandate rules — position, concentration, allocation, VaR, cash, diversification — pass / warning / breach |
 | Forecast | Seeded Monte Carlo fan chart, expected value, probability of loss, horizon VaR, per-asset targets at 1M / 3M / 6M / 1Y |
 | News | Live headlines, keyless via GDELT, optional Finnhub key, timeout + retry |
@@ -84,9 +84,15 @@ v1.0 is complete when all of the following hold. Each is verifiable by command.
 - [x] CI green on GitHub Actions
 - [x] Component risk sums exactly to portfolio volatility (asserted in tests)
 - [x] Backtest uses trailing data only — no look-ahead (asserted in tests)
+- [x] Backtest charges turnover; net return never exceeds gross (asserted in tests)
 - [x] Tests pass whether or not real market data is present
 - [x] Documentation is non-contradictory and single-sourced
-- [ ] Deployed and publicly reachable — **deferred, see §6**
+- [x] `npm run build:single` output opens from disk with no server
+
+**Distribution.** The repository is private by choice. The deliverable is the
+self-contained `dist/aladdin-replica-standalone.html` produced by
+`npm run build:single` — one file, no install, no server, every tab working
+offline. Public hosting is not a goal; see §6.
 
 ## 5. Explicitly out of scope
 
@@ -104,34 +110,41 @@ declined for v1.0.
 | Intraday or streaming prices | End-of-day is sufficient for every metric shown, and keyless sources are daily. |
 | PDF tearsheet export | Browser print produces an acceptable artifact. Not worth a rendering dependency. |
 
-## 6. The one deferred item
+**Recently moved *into* scope.** Per §8, transaction costs in the walk-forward
+backtest were reclassified from excluded to required. The reasoning: a
+frictionless backtest compares monthly-rebalanced optimizers against
+buy-and-hold on terms buy-and-hold never gets, so the optimizers win by
+construction. That is not a missing feature, it is a wrong number, and principles
+1 and 3 do not permit it. The Backtest tab now shows gross and net side by side
+with per-strategy turnover.
 
-**Public deployment.** The GitHub Pages workflow
-(`.github/workflows/deploy.yml`) is correct and CI passes. Pages requires a
-public repository on the free plan; the repository is currently private, which
-is the sole cause of every historical deploy failure.
+## 6. Distribution
 
-To close it — two steps in the browser, no CLI needed:
+**The repository is private, and stays private.** Public hosting is not a goal
+for this project.
 
-1. **Make the repository public.**
-   `Settings → General → Danger Zone → Change repository visibility → Public`.
-2. **Run the deploy.**
-   `Actions → Deploy to GitHub Pages → Run workflow` on `main`. The workflow's
-   `actions/configure-pages@v5` step has `enablement: true`, so it turns Pages on
-   itself — no separate Pages setup required.
-
-Target: `https://garviksh.github.io/aladdin-replica/`. First deploy takes a
-couple of minutes; the URL then appears under `Settings → Pages`.
-
-Equivalent via the GitHub CLI, if `gh` is installed
-(`winget install --id GitHub.cli`, then `gh auth login`):
+The deliverable is the single-file build:
 
 ```bash
-gh repo edit Garviksh/aladdin-replica --visibility public --accept-visibility-change-consequences
-gh workflow run deploy.yml
+npm run build:single    # → dist/aladdin-replica-standalone.html (~340 KB)
 ```
 
-No code change is required either way.
+One file. No install, no server, no network. It opens by double-click from disk
+with every tab, chart, and computation working. That is a better artifact than a
+hosted URL for the way this project is actually shared — a reviewer can open it
+in one action, offline, and it cannot break because a host went down.
+
+`.github/workflows/deploy.yml` remains in the repository and is correct. It only
+runs if the repository is ever made public, which requires a deliberate decision
+that has not been made. CI (`ci.yml`) runs on every push regardless and is the
+workflow that matters.
+
+**Known limitation of the standalone file.** The Copilot needs a local Ollama
+server, and live News, Macro weather and Impact need network access. Opened
+offline, those surfaces show their load gates rather than fabricated data —
+which is principle 1 behaving correctly, not a defect. Everything computed from
+the baked dataset — risk, performance, backtest, scenarios, allocation,
+compliance, forecast — works with no network at all.
 
 ## 7. Verifying a change
 

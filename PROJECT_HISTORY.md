@@ -194,19 +194,22 @@ Every feature was shipped through this loop — keep doing it:
 **v1.0 is feature complete.** The authoritative statement of what is in, what is
 out, and why lives in **[SCOPE.md](SCOPE.md)** — read it before adding anything.
 
-One item remains open, and it needs no code:
+**The repository is private and stays private.** Public deployment was
+considered and dropped — it is not a goal. The deliverable is
+`npm run build:single` → a ~340 KB self-contained HTML file that opens offline by
+double-click. See `SCOPE.md` §6. `deploy.yml` is retained and correct but
+inactive; `ci.yml` is the workflow that runs.
 
-1. **Deploy live** — make the repo public, enable Pages, re-run `deploy.yml`.
-   Pages requires a public repo on the free plan; that is the sole cause of every
-   historical deploy failure. Commands in `SCOPE.md` §6.
-   Target: `https://garviksh.github.io/aladdin-replica/`.
+**Transaction costs shipped** — reclassified from excluded to required, because a
+frictionless backtest is a wrong number rather than a missing feature. See
+`SCOPE.md` §5.
 
 Everything else once tracked here — News-adjusted forecast, weather→commodity
-tilt, transaction costs, Copilot RAG, tearsheet export, portfolio import,
-Fama–French, HRP/CDaR, fixed-income duration, bootstrap Monte Carlo, hosted-LLM
-fallback — is **deliberately excluded from v1.0**, with the reasoning recorded in
-`SCOPE.md` §5. They are not unfinished work. Reopening one means editing SCOPE.md
-first and justifying it against the four principles in §2.
+tilt, Copilot RAG, tearsheet export, portfolio import, Fama–French, HRP/CDaR,
+fixed-income duration, bootstrap Monte Carlo, hosted-LLM fallback — is
+**deliberately excluded from v1.0**, with the reasoning recorded in `SCOPE.md`
+§5. They are not unfinished work. Reopening one means editing SCOPE.md first and
+justifying it against the four principles in §2.
 
 ---
 

@@ -1,22 +1,66 @@
 # ALADDIN · Replica
 
-A small-scale, educational **portfolio & risk-management terminal** that
-replicates the core analyst workflow of BlackRock's *Aladdin* platform, rendered
-in a deliberately **late-2000s black-and-white enterprise interface**.
+A **portfolio & risk-management terminal** built to understand, from first
+principles, the analyst workflow that institutional risk platforms serve — and to
+find out how much of that mathematics one person can implement correctly and
+prove.
 
-Every number on screen is computed — not faked — by a transparent, unit-tested
-risk engine running entirely in the browser: a factor-model market simulation,
-covariance-based volatility, value-at-risk, risk decomposition, factor
-exposures, performance attribution, stress scenarios, mandate compliance, and a
-Monte Carlo forecast. It also ships a dashboard-aware **Copilot** powered by a
-local LLM (**Ollama**) that runs entirely on your machine.
+Every number is computed and unit-tested. There is no quant library underneath:
+factor betas by multivariate OLS with ridge, covariance by sample / EWMA /
+Ledoit–Wolf shrinkage, VaR parametric and historical and Cornish–Fisher,
+Expected Shortfall, component risk that sums exactly to portfolio volatility,
+and a Kupiec + Christoffersen backtest that tests whether the VaR numbers are
+actually right. Thirteen tabs, ~7,700 lines of TypeScript, two runtime
+dependencies (`react`, `react-dom`), 96 tests.
 
-> **Disclaimer.** This is an **independent educational project**. It is **not
-> affiliated with, endorsed by, or connected to BlackRock, Inc.** "Aladdin" is a
-> trademark of BlackRock; it is referenced solely to describe the workflow being
-> emulated. The terminal runs on **real** end-of-day market data (see
-> [Real market data](#real-market-data)); sample data is shown only if you
-> explicitly opt in and is clearly marked. Nothing here is investment advice.
+> **Disclaimer.** An **independent personal project**, **not affiliated with,
+> endorsed by, or connected to BlackRock, Inc.** "Aladdin" is a trademark of
+> BlackRock; it is referenced only to name the category of workflow being
+> studied. No BlackRock code, data, design or intellectual property was used or
+> reproduced — the interface is an original monochrome design and every
+> calculation was written from published methodology. Nothing here is investment
+> advice.
+
+---
+
+## For a reviewer with five minutes
+
+If you only open three things, open these:
+
+1. **Risk tab → VaR Backtest.** Kupiec POF and Christoffersen coverage tests
+   with p-values and a PASS/FAIL. Most portfolio projects report VaR; this one
+   tests whether its VaR was any good.
+2. **Backtest tab → the cost selector.** Toggle 0bps → 10bps → 50bps and watch
+   the leaderboard. Frictionless, the monthly optimizers win. Charge turnover
+   and the comparison changes. Written up in
+   [Transaction costs](#transaction-costs-why-the-backtest-shows-two-numbers).
+3. **[SCOPE.md](SCOPE.md) §5 — Explicitly out of scope.** Eight capabilities
+   considered and declined, each with a reason. What was left out is the part I
+   would most want to be asked about.
+
+A written walkthrough — what was hard, what I got wrong, what I would build next
+— is in **[CASE_STUDY.md](CASE_STUDY.md)**.
+
+The fastest way to see it: `npm run build:single` produces one ~340 KB HTML file
+that opens offline by double-click, no install and no server.
+
+---
+
+## Screenshots
+
+<!-- Drop PNGs into docs/images/ with these names and the links below resolve. -->
+
+| Dashboard | Risk |
+|---|---|
+| ![Dashboard](docs/images/dashboard.png) | ![Risk](docs/images/risk.png) |
+
+| Backtest — gross vs net of costs | Copilot |
+|---|---|
+| ![Backtest](docs/images/backtest.png) | ![Copilot](docs/images/copilot.png) |
+
+The interface is strictly monochrome: gains and losses use ▲ / ▼ and accounting
+parentheses rather than colour, so it stays colour-blind safe and reads like the
+enterprise terminals the workflow comes from.
 
 ---
 
@@ -38,7 +82,9 @@ moves through a book:
 - **Performance** — cumulative return vs. benchmark, Sharpe/Sortino/Calmar,
   rolling metrics, top drawdowns, and return attribution by sector and class.
 - **Backtest** — walk-forward, monthly-rebalanced comparison of Current /
-  Equal-weight / Min-Variance / Risk-Parity strategies (no look-ahead).
+  Equal-weight / Min-Variance / Risk-Parity strategies (no look-ahead), reported
+  **gross and net of transaction costs** with per-strategy turnover and a
+  0–50bps cost selector.
 - **Compliance** — a live mandate rule set (position, concentration, allocation,
   VaR, cash, and diversification limits) flagged pass / warning / breach.
 - **Forecast** — a seeded Monte Carlo projection of the book (percentile fan
@@ -61,9 +107,31 @@ moves through a book:
 - **Guide** — a plain-English walkthrough of how to manage a book and what every
   metric means.
 
-The whole UI is strictly monochrome: gains and losses use ▲ / ▼ markers and
-accounting parentheses instead of colour, so it stays true black-and-white and
-colour-blind safe.
+## Transaction costs — why the backtest shows two numbers
+
+The first version of the Backtest tab was wrong, and wrong in the direction that
+flatters the author.
+
+Min-Variance and Risk-Parity re-solve their weights every 21 days and trade to
+reach them. "Current (buy & hold)" trades once and then holds. With rebalancing
+free, the strategies that trade constantly were being compared against
+buy-and-hold on terms buy-and-hold never gets — so they won partly by
+construction, and the chart looked like a result when it was an artifact.
+
+Now every strategy starts equal-weighted, pays to reach its first target, and
+pays `½·Σ|Δw| · costBps` of traded notional at each rebalance. The table shows
+gross and net side by side, plus annual turnover per strategy, and the cost
+assumption is a control on the page rather than a constant buried in a file —
+because the honest thing to do with an assumption is let the reader move it.
+
+Default is 10bps one-way, deliberately conservative for liquid US equity and ETF
+exposure. Set it to 0 to see what a frictionless backtest would have claimed.
+
+Implementation: [`src/engine/strategyBacktest.ts`](src/engine/strategyBacktest.ts).
+Invariants asserted in [`tests/backtest-strategies.test.ts`](tests/backtest-strategies.test.ts):
+net never exceeds gross, cost drag is monotonic in bps, buy-and-hold turns over
+strictly less than the monthly optimizers, and the cost assumption never feeds
+back into the weight decisions.
 
 ## Copilot — local AI (Ollama), dashboard-aware
 
@@ -185,12 +253,24 @@ Full detail — including the ADRs behind the design — is in
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md); the product rationale is in
 [`docs/PRODUCT_BRIEF.md`](docs/PRODUCT_BRIEF.md).
 
-## Deployment
+## Distribution
 
-Pushing to `main` triggers the GitHub Pages workflow
-(`.github/workflows/deploy.yml`). Enable **Settings → Pages → Source: GitHub
-Actions** on the repo. The build uses a relative base path, so it also works from
-any static host or subdirectory.
+This repository is private. The deliverable is the single-file build:
+
+```bash
+npm run build:single    # → dist/aladdin-replica-standalone.html (~340 KB)
+```
+
+One file with all CSS and JS inlined. It opens by double-click from disk — no
+install, no server, no network — with every tab, chart and computation working.
+Risk, performance, backtest, scenarios, allocation, compliance and forecast all
+run from the baked dataset. The Copilot needs a local Ollama server, and live
+News / weather need a connection; opened offline those show their load gates
+rather than invented numbers, which is the data-integrity principle working as
+intended.
+
+A GitHub Pages workflow exists and is correct, but is inactive while the
+repository stays private. See [SCOPE.md](SCOPE.md) §6.
 
 ## Scope & status
 
